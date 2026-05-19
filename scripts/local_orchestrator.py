@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import shlex
+import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -69,14 +70,25 @@ def read_prompt(prompt_file: str) -> str:
     return prompt_path.read_text(encoding="utf-8")
 
 
+def resolve_cli_command(name: str) -> str:
+    if sys.platform.startswith("win"):
+        for candidate in (f"{name}.cmd", f"{name}.exe", name):
+            resolved = shutil.which(candidate)
+            if resolved:
+                return resolved
+        return name
+
+    return shutil.which(name) or name
+
+
 def build_agent_command(task: dict[str, Any]) -> list[str]:
     assigned_to = str(task.get("assigned_to", "")).strip().lower()
     prompt_text = read_prompt(task["prompt_file"])
 
     if assigned_to == "codex":
-        return ["codex", "exec", "--full-auto", prompt_text]
+        return [resolve_cli_command("codex"), "exec", "--full-auto", prompt_text]
     if assigned_to == "opencode":
-        return ["opencode", "run", prompt_text]
+        return [resolve_cli_command("opencode"), "run", prompt_text]
     raise ValueError(f"Unsupported task owner: {assigned_to}")
 
 
@@ -97,6 +109,8 @@ def run_command(command: list[str], log_name: str) -> subprocess.CompletedProces
         cwd=ROOT,
         text=True,
         capture_output=True,
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
     write_log(log_name, command, result)
