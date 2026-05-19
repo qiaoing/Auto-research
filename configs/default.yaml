@@ -1,0 +1,7 @@
+project:
+  name: research-autopilot
+  mode: placeholder
+
+simulation:
+  sample_time: 0.1
+  duration: 10.0

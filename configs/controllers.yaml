@@ -1,0 +1,8 @@
+pid:
+  kp: 1.0
+  ki: 0.0
+  kd: 0.0
+
+mpc:
+  horizon: 10
+  control_dim: 3

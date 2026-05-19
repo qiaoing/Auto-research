@@ -1,0 +1,57 @@
+{
+  "project": "rl-mpc-hauv-research",
+  "current_phase": "initialization",
+  "tasks": [
+    {
+      "id": "SIM-001",
+      "title": "实现 3-DOF 平面水下机器人动力学模型",
+      "type": "coding",
+      "assigned_to": "codex",
+      "priority": 1,
+      "status": "pending",
+      "prompt_file": "prompts/codex/SIM-001.md",
+      "expected_outputs": [
+        "src/dynamics/underwater_vehicle.py",
+        "tests/test_underwater_vehicle.py"
+      ],
+      "quality_checks": [
+        "pytest tests/test_underwater_vehicle.py -q"
+      ],
+      "requires_human_approval": false
+    },
+    {
+      "id": "SIM-002",
+      "title": "实现基础 PID baseline 控制器",
+      "type": "coding",
+      "assigned_to": "codex",
+      "priority": 2,
+      "status": "pending",
+      "prompt_file": "prompts/codex/SIM-002.md",
+      "expected_outputs": [
+        "src/controllers/pid.py",
+        "tests/test_pid.py"
+      ],
+      "quality_checks": [
+        "pytest tests/test_pid.py -q"
+      ],
+      "requires_human_approval": false
+    },
+    {
+      "id": "FIG-001",
+      "title": "创建轨迹绘图脚本模板",
+      "type": "plotting",
+      "assigned_to": "opencode",
+      "priority": 3,
+      "status": "pending",
+      "prompt_file": "prompts/opencode/FIG-001.md",
+      "expected_outputs": [
+        "src/visualization/plot_trajectory.py",
+        "figures/README.md"
+      ],
+      "quality_checks": [
+        "python src/visualization/plot_trajectory.py --help"
+      ],
+      "requires_human_approval": false
+    }
+  ]
+}

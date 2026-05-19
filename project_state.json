@@ -1,0 +1,21 @@
+{
+  "project_name": "Research Autopilot for Learning-based MPC of Multimodal Underwater Robots",
+  "short_name": "rl-mpc-hauv",
+  "domain": "multimodal underwater robot control",
+  "current_stage": "initialization",
+  "selected_research_direction": null,
+  "cloud_orchestrator": "Hermes",
+  "local_agents": ["Codex", "OpenCode", "PythonRunner", "PlotAgent", "PaperAgent"],
+  "human_approval_required": [
+    "final research direction selection",
+    "hardware experiment execution",
+    "paper submission"
+  ],
+  "quality_gates": {
+    "literature_min_papers": 50,
+    "core_papers_min": 15,
+    "simulation_baselines_min": 3,
+    "figures_min": 6,
+    "hardware_safety_review": true
+  }
+}

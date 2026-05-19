@@ -1,0 +1,11 @@
+experiment:
+  name: sim_tracking
+  description: Placeholder closed-loop tracking configuration.
+
+vehicle:
+  model: planar_underwater_vehicle_3dof
+  initial_state: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+reference:
+  type: hold
+  target: [0.0, 0.0, 0.0]

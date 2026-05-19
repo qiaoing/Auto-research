@@ -1,0 +1,90 @@
+{
+  "project": "rl-mpc-hauv-research",
+  "version": 1,
+  "workstreams": [
+    {
+      "id": "RES-001",
+      "title": "文献综述",
+      "description": "系统筛选学习型 MPC、RL-MPC、水下机器人动力学建模与抗扰控制相关文献，形成结构化综述。",
+      "acceptanceCriteria": [
+        "筛选文献清单已建立",
+        "核心论文摘要与对比完成",
+        "形成研究空白与趋势总结"
+      ],
+      "priority": 1,
+      "passes": 2
+    },
+    {
+      "id": "NOV-001",
+      "title": "创新点挖掘",
+      "description": "围绕多模态水下机器人、非线性扰动与学习辅助预测控制，提出并评分候选创新点。",
+      "acceptanceCriteria": [
+        "至少形成 3 个候选创新点",
+        "完成可行性与新颖性评分",
+        "给出推荐主线方向"
+      ],
+      "priority": 1,
+      "passes": 2
+    },
+    {
+      "id": "THE-001",
+      "title": "理论建模",
+      "description": "明确问题定义、状态与控制变量、约束条件、代价函数以及学习模块与 MPC 的耦合方式。",
+      "acceptanceCriteria": [
+        "问题表述完整",
+        "核心符号和假设清晰",
+        "方法推导可支持后续实现"
+      ],
+      "priority": 1,
+      "passes": 3
+    },
+    {
+      "id": "SIM-PRD-001",
+      "title": "仿真程序",
+      "description": "构建可复现仿真环境，包含动力学、基线控制器、指标计算、对比实验与结果保存接口。",
+      "acceptanceCriteria": [
+        "至少 3 个基线可对比",
+        "指标定义明确",
+        "结果可复现实验配置"
+      ],
+      "priority": 2,
+      "passes": 3
+    },
+    {
+      "id": "HW-001",
+      "title": "硬件实验设计",
+      "description": "设计真实平台验证方案、传感器与执行器接口、安全检查清单和人工确认流程。",
+      "acceptanceCriteria": [
+        "明确不自动执行硬件",
+        "安全机制与人工步骤完整",
+        "sim2real 差距分析框架可用"
+      ],
+      "priority": 2,
+      "passes": 2
+    },
+    {
+      "id": "ANA-001",
+      "title": "结果分析",
+      "description": "整理仿真与后续实验结果，形成图表、误差分析、消融结论与局限性总结。",
+      "acceptanceCriteria": [
+        "主要图表目录明确",
+        "分析维度覆盖性能与鲁棒性",
+        "可直接支撑论文结果章节"
+      ],
+      "priority": 2,
+      "passes": 2
+    },
+    {
+      "id": "PAPER-001",
+      "title": "论文初稿",
+      "description": "完成论文主结构、章节草稿、参考文献占位和图表引用规划。",
+      "acceptanceCriteria": [
+        "主文件与章节骨架齐全",
+        "方法与实验章节有初始内容",
+        "参考文献入口可维护"
+      ],
+      "priority": 3,
+      "passes": 2
+    }
+  ]
+}
