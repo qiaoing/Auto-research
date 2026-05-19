@@ -20,3 +20,10 @@
 - Worker 1 documentation scaffold: completed.
 - Task queue and prompt templates: created.
 - Research, experiments, figures, and paper placeholders: created.
+
+## 2026-05-19
+
+- SIM-001 completed: implemented a coupled 3-DOF planar underwater vehicle model in `src/dynamics/underwater_vehicle.py`.
+- Added SIM-001 tests for shape, zero-velocity equilibrium, coupled deterministic dynamics, and yaw-angle integration in `tests/test_underwater_vehicle.py`.
+- Verified all SIM-001 test functions by direct execution with `conda run -n MPC python -c ...`; `pytest` is currently unavailable in accessible environments.
+- [2026-05-19 23:01:22] Task SIM-001 completed successfully.
