@@ -1,29 +1,29 @@
-# Research Autopilot Progress Log
+# Research Autopilot 进度日志
 
-## Codebase Patterns
+## 仓库约定
 
-- This repository uses `tasks/task_queue.json` as the local task queue.
-- Codex should be used for simulation code and complex implementation tasks.
-- OpenCode should be used for plotting, refactoring, and paper infrastructure tasks.
-- Hardware experiment execution requires human approval.
+- 本仓库使用 `tasks/task_queue.json` 作为本地任务队列。
+- `Codex` 主要用于仿真代码、动力学建模和复杂实现任务。
+- `OpenCode` 主要用于绘图脚本、整理工作和论文基础设施任务。
+- 任何真实硬件实验都必须经过人工确认。
 
 ---
 
-## Initialization
+## 初始化阶段
 
-- Repository initialized.
-- Project structure created.
-- Waiting for Hermes to generate or update research tasks.
+- 仓库已初始化完成。
+- 项目目录结构已创建。
+- 等待 `Hermes` 继续生成或更新研究任务。
 
-## Initialization Status
+## 初始化状态
 
-- Worker 1 documentation scaffold: completed.
-- Task queue and prompt templates: created.
-- Research, experiments, figures, and paper placeholders: created.
+- 文档骨架已创建。
+- 任务队列与提示词模板已创建。
+- 研究、实验、图表和论文占位文件已创建。
 
 ## 2026-05-19
 
-- SIM-001 completed: implemented a coupled 3-DOF planar underwater vehicle model in `src/dynamics/underwater_vehicle.py`.
-- Added SIM-001 tests for shape, zero-velocity equilibrium, coupled deterministic dynamics, and yaw-angle integration in `tests/test_underwater_vehicle.py`.
-- Verified all SIM-001 test functions by direct execution with `conda run -n MPC python -c ...`; `pytest` is currently unavailable in accessible environments.
-- [2026-05-19 23:01:22] Task SIM-001 completed successfully.
+- `SIM-001` 已完成：实现了耦合型 3-DOF 平面水下机器人动力学模型，文件位于 `src/dynamics/underwater_vehicle.py`。
+- 已为 `SIM-001` 补充测试，覆盖输出维度、零速度平衡、固定输入确定性和偏航角积分行为，文件位于 `tests/test_underwater_vehicle.py`。
+- 已验证 `python -m pytest -q` 通过。
+- [2026-05-19 23:01:22] 本地调度器已将 `SIM-001` 标记为完成。

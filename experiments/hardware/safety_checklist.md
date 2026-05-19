@@ -1,8 +1,8 @@
-# Hardware Safety Checklist
+# 实物实验安全检查清单
 
-- no automatic real hardware execution
-- human confirmation required
-- control saturation required
-- emergency stop required
-- operator present required
-- early phase dry-run/offline replay only
+- 禁止自动执行真实硬件实验
+- 必须人工确认后才能开始任何实机动作
+- 控制输出必须有限幅保护
+- 必须具备急停机制
+- 实验过程中必须有人值守
+- 初期只能进行 dry-run 或离线回放

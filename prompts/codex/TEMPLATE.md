@@ -1,32 +1,32 @@
-# Task [ID]: [Title]
+# 任务 [ID]：[标题]
 
-You are Codex, a local coding agent working in this Git repository.
+你是 Codex，本地代码代理，正在当前 Git 仓库中工作。
 
-## Goal
+## 目标
 
-[Describe goal]
+[描述本任务目标]
 
-## Files
+## 文件
 
-- Create:
-- Modify:
-- Tests:
+- 创建：
+- 修改：
+- 测试：
 
-## Requirements
+## 要求
 
 1.
 2.
 3.
 
-## Quality Checks
+## 质量检查
 
 ```bash
 pytest -q
 ```
 
-## Rules
+## 规则
 
-Do not modify unrelated files.
-Do not execute hardware tasks.
-Update `progress.md`.
-Commit after success.
+- 不要修改无关文件
+- 不要执行硬件任务
+- 更新 `progress.md`
+- 成功后再提交

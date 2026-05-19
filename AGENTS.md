@@ -1,48 +1,50 @@
 # AGENTS.md
 
-## Project Role
+## 项目角色
 
-This repository is a local execution workspace for a multi-agent research autopilot system.
+本仓库是科研多智能体自动化系统的本地执行工作区。
 
-Cloud Hermes acts as the research orchestrator.
-Local Codex/OpenCode agents implement code, simulations, plotting scripts, and paper infrastructure.
+云端 `Hermes` 负责研究编排与审查。
+本地 `Codex` / `OpenCode` 负责代码实现、仿真、绘图脚本和论文基础设施。
 
-## Research Domain
+## 研究领域
 
-- Multimodal underwater robots / HAUV
-- Learning-based MPC
+- 多模态水下机器人 / HAUV
+- 学习型 MPC
 - RL-MPC
-- Nonlinear underwater dynamics
-- Disturbance rejection
-- Simulation and hardware experiment design
+- 强非线性水下动力学
+- 扰动抑制与鲁棒控制
+- 仿真实验与实物实验设计
 
-## Rules for Local Agents
+## 本地代理规则
 
-1. Do not execute real hardware experiments automatically.
-2. Hardware-related tasks must stop at design, scripts, checks, or dry-run unless human approval is explicitly given.
-3. Keep code modular and testable.
-4. Prefer simple, reproducible Python simulation code.
-5. Every coding task should include tests when practical.
-6. Do not hard-code API keys, tokens, or credentials.
-7. Store generated results in `results/`.
-8. Store figures in `figures/`.
-9. Store paper materials in `paper/`.
-10. Update `progress.md` after completing or failing a task.
-11. Use Git commits frequently.
-12. Do not modify unrelated files for a task.
+1. 不得自动执行真实硬件实验。
+2. 硬件相关任务只能停留在设计、脚本、检查项或 dry-run 阶段，除非已经获得明确人工批准。
+3. 代码应保持模块化、可测试、易复现。
+4. 优先使用简单清晰的 Python 仿真代码。
+5. 只要实际可行，每个编码任务都应补充测试。
+6. 不得硬编码 API key、token 或其他凭据。
+7. 生成结果统一保存到 `results/`。
+8. 图表统一保存到 `figures/`。
+9. 论文素材统一保存到 `paper/`。
+10. 任务完成或失败后都要更新 `progress.md`。
+11. 应保持较高的 Git 提交频率。
+12. 不得为当前任务修改无关文件。
 
-## Quality Checks
+## 质量检查
 
-Before marking a coding task done, run relevant tests, for example:
+在将编码任务标记为完成前，应运行相关测试，例如：
 
 ```bash
 pytest -q
 ```
 
-For plotting tasks, verify expected output files exist.
-For paper tasks, compile or at least validate file references when possible.
+补充要求：
 
-## Safety
+- 绘图任务应检查目标文件是否已经生成
+- 论文任务应尽可能编译或至少检查引用路径与章节引用是否正确
 
-Any task with `type=hardware_execution` or `requires_human_approval=true` must not be executed automatically.
-Instead, mark it as blocked and write required human approval steps.
+## 安全约束
+
+任何 `type=hardware_execution` 或 `requires_human_approval=true` 的任务都不得自动执行。
+遇到这类任务时，应将其标记为 `blocked`，并写清楚所需的人工作业和确认步骤。

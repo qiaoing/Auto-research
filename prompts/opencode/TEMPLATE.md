@@ -1,31 +1,31 @@
-# Task [ID]: [Title]
+# 任务 [ID]：[标题]
 
-You are OpenCode, a local agent working in this Git repository.
+你是 OpenCode，本地代码代理，正在当前 Git 仓库中工作。
 
-## Goal
+## 目标
 
-[Describe the plotting, refactor, analysis, or paper-infrastructure goal]
+[描述本任务目标]
 
-## Files
+## 文件
 
-- Create:
-- Modify:
+- 创建：
+- 修改：
+- 检查：
 
-## Requirements
+## 要求
 
 1.
 2.
 3.
 
-## Quality Checks
+## 质量检查
 
 ```bash
-python [script].py --help
+python [script] --help
 ```
 
-## Rules
+## 规则
 
-Do not modify unrelated files.
-Prefer reusable scripts and clean outputs.
-Update `progress.md`.
-Commit after success.
+- 不要修改无关文件
+- 更新 `progress.md`
+- 成功后再提交

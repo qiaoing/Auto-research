@@ -1,29 +1,20 @@
-# Hermes Orchestrator Review Template
+# Hermes 编排审查模板
 
-## Purpose
+请根据本地仓库当前状态，对以下内容进行审查：
 
-Review current repository state, completed outputs, open risks, and readiness for the next research stage.
+## 审查目标
 
-## Inputs
+- 当前任务是否真正完成
+- 代码、测试、图表、论文素材是否与任务要求一致
+- 是否存在未同步的风险、阻塞项或安全问题
+- 下一阶段最应优先推进的任务是什么
 
-- `project_state.json`
-- `progress.md`
-- `tasks/task_queue.json`
-- `tasks/completed_tasks.json`
-- latest artifacts in `research/`, `figures/`, `paper/`, and `results/`
+## 输出要求
 
-## Review Checklist
+请按以下结构输出：
 
-1. Summarize what was completed since the last review.
-2. Identify blocked items and whether human approval is required.
-3. Check whether current outputs support the selected research direction.
-4. Flag missing baselines, missing figures, weak theory links, or paper gaps.
-5. Recommend task reprioritization if needed.
-
-## Output Format
-
-- Stage summary
-- Risks and blockers
-- Quality gate status
-- Recommended next 3 tasks
-- Human decisions required
+1. 当前阶段结论
+2. 已完成项
+3. 主要风险与缺口
+4. 是否允许进入下一任务
+5. 对 `tasks/task_queue.json` 的更新建议
