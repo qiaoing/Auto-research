@@ -81,6 +81,20 @@ def resolve_cli_command(name: str) -> str:
     return shutil.which(name) or name
 
 
+def normalize_repo_path(path: str) -> str:
+    return Path(path).as_posix().lstrip("./")
+
+
+def expected_output_touched(task: dict[str, Any], changed_files: list[str]) -> bool:
+    expected_outputs = task.get("expected_outputs", [])
+    if not expected_outputs:
+        return True
+
+    expected = {normalize_repo_path(path) for path in expected_outputs}
+    changed = {normalize_repo_path(path) for path in changed_files}
+    return not expected.isdisjoint(changed)
+
+
 def build_agent_command(task: dict[str, Any]) -> list[str]:
     assigned_to = str(task.get("assigned_to", "")).strip().lower()
     prompt_text = read_prompt(task["prompt_file"])
@@ -103,8 +117,8 @@ def normalize_quality_check(command_text: str) -> list[str]:
     return parts
 
 
-def run_command(command: list[str], log_name: str) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(
+def capture_command(command: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
         command,
         cwd=ROOT,
         text=True,
@@ -113,8 +127,41 @@ def run_command(command: list[str], log_name: str) -> subprocess.CompletedProces
         errors="replace",
         check=False,
     )
+
+
+def run_command(command: list[str], log_name: str) -> subprocess.CompletedProcess[str]:
+    result = capture_command(command)
     write_log(log_name, command, result)
     return result
+
+
+def current_head() -> str | None:
+    result = capture_command(["git", "rev-parse", "HEAD"])
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip() or None
+
+
+def changed_files_since(reference_head: str | None) -> list[str]:
+    changed_files: set[str] = set()
+
+    if reference_head is not None:
+        post_head = current_head()
+        if post_head is not None and post_head != reference_head:
+            result = capture_command(["git", "diff", "--name-only", f"{reference_head}..{post_head}"])
+            if result.returncode == 0:
+                changed_files.update(line.strip() for line in result.stdout.splitlines() if line.strip())
+
+    for command in (
+        ["git", "diff", "--name-only"],
+        ["git", "diff", "--cached", "--name-only"],
+        ["git", "ls-files", "--others", "--exclude-standard"],
+    ):
+        result = capture_command(command)
+        if result.returncode == 0:
+            changed_files.update(line.strip() for line in result.stdout.splitlines() if line.strip())
+
+    return sorted(changed_files)
 
 
 def mark_task(task: dict[str, Any], status: str, note: str) -> None:
@@ -148,6 +195,7 @@ def main() -> int:
         append_progress(note)
         return 0
 
+    baseline_head = current_head()
     agent_command = build_agent_command(task)
     task_result = run_command(agent_command, f"{task_id}_agent.log")
     if task_result.returncode != 0:
@@ -156,6 +204,15 @@ def main() -> int:
         save_queue(queue)
         append_progress(note)
         return task_result.returncode
+
+    changed_files = changed_files_since(baseline_head)
+    if not expected_output_touched(task, changed_files):
+        note = f"Task {task_id} exited successfully but did not modify expected outputs."
+        mark_task(task, "failed", note)
+        task["changed_files"] = changed_files
+        save_queue(queue)
+        append_progress(note)
+        return 1
 
     for index, quality_check in enumerate(task.get("quality_checks", []), start=1):
         check_command = normalize_quality_check(quality_check)
@@ -169,6 +226,7 @@ def main() -> int:
 
     note = f"Task {task_id} completed successfully."
     mark_task(task, "done", note)
+    task["changed_files"] = changed_files
     save_queue(queue)
     append_progress(note)
     return 0
