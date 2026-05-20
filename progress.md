@@ -84,3 +84,9 @@
 - 2026-05-20T15:13:09+00:00 Task RES-FXTA-ESO started.
 
 - 2026-05-20T15:20:37+00:00 Task RES-FXTA-ESO failed: orchestrator exception: 'gbk' codec can't decode byte 0x80 in position 929: illegal multibyte sequence.
+
+- 2026-05-20T15:20:48+00:00 Task RES-FORGETTING-FACTOR claimed by local-runner.
+
+- 2026-05-20T15:20:48+00:00 Task RES-FORGETTING-FACTOR started.
+
+- 2026-05-20T15:29:31+00:00 Task RES-FORGETTING-FACTOR failed: orchestrator exception: 'gbk' codec can't decode byte 0xaa in position 9895: illegal multibyte sequence.

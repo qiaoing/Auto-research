@@ -240,7 +240,7 @@
       "type": "research",
       "assigned_to": "codex",
       "priority": 3,
-      "status": "pending",
+      "status": "failed",
       "prompt_file": "prompts/codex/RES-FORGETTING-FACTOR.md",
       "expected_outputs": [
         "reports/research/RES-FORGETTING-FACTOR.md",
@@ -248,17 +248,23 @@
       ],
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 2,
-      "changed_files": [],
-      "logs": [],
-      "last_note": "Created by cloud Hermes for local Codex research execution.",
-      "last_error": null,
-      "claimed_by": null,
-      "claimed_at": null,
-      "started_at": null,
-      "finished_at": null,
-      "last_update": "2026-05-20T14:55:10.222558+00:00",
+      "changed_files": [
+        "logs/runner_status.json",
+        "progress.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/RES-FORGETTING-FACTOR_orchestrator.log"
+      ],
+      "last_note": "Orchestrator raised an exception.",
+      "last_error": "orchestrator exception: 'gbk' codec can't decode byte 0xaa in position 9895: illegal multibyte sequence",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-20T15:20:48+00:00",
+      "started_at": "2026-05-20T15:20:48+00:00",
+      "finished_at": "2026-05-20T15:29:31+00:00",
+      "last_update": "2026-05-20T15:29:31+00:00",
       "created_by": "cloud-hermes",
       "review_requirements": [
         "reports/research/RES-FORGETTING-FACTOR.md exists and is non-empty",
