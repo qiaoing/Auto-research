@@ -68,3 +68,5 @@
 - 2026-05-20T12:59:00+00:00 Task SIM-002 started.
 
 - 2026-05-20T13:00:57+00:00 Task SIM-002 failed: orchestrator exception: 'gbk' codec can't decode byte 0x80 in position 9783: illegal multibyte sequence.
+
+- 2026-05-20T13:01:09+00:00 No pending task found for local runner.
