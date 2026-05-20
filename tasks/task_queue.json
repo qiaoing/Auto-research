@@ -35,6 +35,31 @@
       "finished_at": "2026-05-19 23:01:22"
     },
     {
+      "id": "RUN-ONCE-SMOKE",
+      "title": "Local runner run-once smoke test",
+      "type": "coding",
+      "assigned_to": "codex",
+      "priority": 0,
+      "status": "pending",
+      "expected_outputs": [
+        "tasks/task_queue.json",
+        "progress.md",
+        "logs/RUN-ONCE-SMOKE_agent.log"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
+    },
+    {
       "id": "SIM-002",
       "title": "实现基础 PID baseline 控制器",
       "type": "coding",
