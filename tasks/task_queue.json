@@ -157,6 +157,102 @@
       "started_at": "2026-05-20T09:57:44+00:00",
       "finished_at": "2026-05-20T09:57:45+00:00",
       "last_update": "2026-05-20T09:57:45+00:00"
+    },
+    {
+      "id": "RES-RL-DIFF-MPC",
+      "title": "调研 RL 与可微 MPC / Differentiable MPC 融合方法",
+      "type": "research",
+      "assigned_to": "codex",
+      "priority": 1,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RES-RL-DIFF-MPC.md",
+      "expected_outputs": [
+        "reports/research/RES-RL-DIFF-MPC.md",
+        "progress.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "changed_files": [],
+      "logs": [],
+      "last_note": "Created by cloud Hermes for local Codex research execution.",
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": "2026-05-20T14:55:10.222558+00:00",
+      "created_by": "cloud-hermes",
+      "review_requirements": [
+        "reports/research/RES-RL-DIFF-MPC.md exists and is non-empty",
+        "Chinese Markdown deep research report, not only outline",
+        "Includes method taxonomy, comparison table, research suggestions, and references/verification notes"
+      ]
+    },
+    {
+      "id": "RES-FXTA-ESO",
+      "title": "调研固定时间自适应状态拓展观测器",
+      "type": "research",
+      "assigned_to": "codex",
+      "priority": 2,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RES-FXTA-ESO.md",
+      "expected_outputs": [
+        "reports/research/RES-FXTA-ESO.md",
+        "progress.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "changed_files": [],
+      "logs": [],
+      "last_note": "Created by cloud Hermes for local Codex research execution.",
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": "2026-05-20T14:55:10.222558+00:00",
+      "created_by": "cloud-hermes",
+      "review_requirements": [
+        "reports/research/RES-FXTA-ESO.md exists and is non-empty",
+        "Chinese Markdown deep research report, not only outline",
+        "Includes method taxonomy, comparison table, research suggestions, and references/verification notes"
+      ]
+    },
+    {
+      "id": "RES-FORGETTING-FACTOR",
+      "title": "调研遗忘因子在自适应估计、RLS 与学习控制中的作用",
+      "type": "research",
+      "assigned_to": "codex",
+      "priority": 3,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RES-FORGETTING-FACTOR.md",
+      "expected_outputs": [
+        "reports/research/RES-FORGETTING-FACTOR.md",
+        "progress.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "changed_files": [],
+      "logs": [],
+      "last_note": "Created by cloud Hermes for local Codex research execution.",
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null,
+      "last_update": "2026-05-20T14:55:10.222558+00:00",
+      "created_by": "cloud-hermes",
+      "review_requirements": [
+        "reports/research/RES-FORGETTING-FACTOR.md exists and is non-empty",
+        "Chinese Markdown deep research report, not only outline",
+        "Includes method taxonomy, comparison table, research suggestions, and references/verification notes"
+      ]
     }
   ]
 }
