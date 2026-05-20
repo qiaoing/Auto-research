@@ -83,7 +83,7 @@
       "type": "coding",
       "assigned_to": "codex",
       "priority": 1,
-      "status": "pending",
+      "status": "failed",
       "prompt_file": "prompts/codex/SIM-002.md",
       "expected_outputs": [
         "src/controllers/pid.py",
@@ -96,17 +96,23 @@
         "pytest -q"
       ],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 3,
-      "changed_files": [],
-      "logs": [],
-      "last_note": "Hermes reset SIM-002 for formal implementation after runner finalization hardening. Implement actual PIDController, tests, and exports.",
-      "last_error": null,
-      "claimed_by": null,
-      "claimed_at": null,
-      "started_at": null,
-      "finished_at": null,
-      "last_update": "2026-05-20T12:17:16Z",
+      "changed_files": [
+        "logs/runner_status.json",
+        "progress.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/SIM-002_orchestrator.log"
+      ],
+      "last_note": "Orchestrator raised an exception.",
+      "last_error": "orchestrator exception: 'gbk' codec can't decode byte 0x80 in position 9783: illegal multibyte sequence",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-20T12:59:00+00:00",
+      "started_at": "2026-05-20T12:59:00+00:00",
+      "finished_at": "2026-05-20T13:00:57+00:00",
+      "last_update": "2026-05-20T13:00:57+00:00",
       "created_by": "hermes",
       "review_requirements": [
         "PIDController supports scalar and vector errors",
