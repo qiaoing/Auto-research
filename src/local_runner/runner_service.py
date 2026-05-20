@@ -50,7 +50,6 @@ def run_once(repo_root: Path, run_id: str | None = None) -> dict[str, Any]:
         return {"accepted": False, "busy": True, "run_id": run_id, "status": "busy"}
 
     result: dict[str, Any] | None = None
-    write_runner_status(repo_root, current_task=None, last_run_id=run_id, last_run_at=utc_now_iso(), last_run_status="running")
     logger.info("runner run %s started", run_id)
     try:
         try:
@@ -58,6 +57,7 @@ def run_once(repo_root: Path, run_id: str | None = None) -> dict[str, Any]:
         except Exception as exc:  # noqa: BLE001 - runner must preserve local task status even if git sync fails.
             logger.exception("git pull --rebase failed: %s", exc)
 
+        write_runner_status(repo_root, current_task=None, last_run_id=run_id, last_run_at=utc_now_iso(), last_run_status="running")
         result = run_one(repo_root, runner_id="local-runner")
         write_runner_status(
             repo_root,
@@ -87,7 +87,15 @@ def run_once(repo_root: Path, run_id: str | None = None) -> dict[str, Any]:
         try:
             _log_git_result(logger, "git add -A", git_ops.add_all(repo_root))
             _log_git_result(logger, "git commit", git_ops.commit(repo_root, "agent: local runner update"))
-            _log_git_result(logger, "git push", git_ops.push(repo_root))
+            push_result = git_ops.push(repo_root)
+            _log_git_result(logger, "git push", push_result)
+            if push_result is not None and push_result.returncode != 0:
+                logger.warning("git push failed; attempting pull --rebase then one push retry")
+                try:
+                    _log_git_result(logger, "git pull --rebase (retry)", git_ops.pull_rebase(repo_root))
+                except Exception as exc:  # noqa: BLE001
+                    logger.exception("git pull --rebase retry failed: %s", exc)
+                _log_git_result(logger, "git push (retry)", git_ops.push(repo_root))
         except Exception as exc:  # noqa: BLE001
             logger.exception("git publish step failed: %s", exc)
         lock.release()

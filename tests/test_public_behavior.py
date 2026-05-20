@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+from types import SimpleNamespace
 from pathlib import Path
 
 from local_runner import runner_service
@@ -154,6 +155,55 @@ def test_service_still_attempts_publish_when_orchestrator_raises(repo_root: Path
 
     assert result["status"] == "error"
     assert calls == ["pull", "add", "commit", "push"]
+
+
+def test_service_pulls_before_writing_running_status(repo_root: Path, monkeypatch) -> None:
+    calls: list[str] = []
+
+    def fake_pull(_repo_root: Path):
+        calls.append("pull")
+        return None
+
+    def fake_status(_repo_root: Path, **updates):
+        if updates.get("last_run_status") == "running":
+            calls.append("status-running")
+        return {}
+
+    monkeypatch.setattr(runner_service.git_ops, "pull_rebase", fake_pull)
+    monkeypatch.setattr(runner_service, "write_runner_status", fake_status)
+    monkeypatch.setattr(runner_service, "run_one", lambda _repo_root, runner_id="local-runner": {"status": "idle", "task_id": None})
+    monkeypatch.setattr(runner_service.git_ops, "add_all", lambda _repo_root: None)
+    monkeypatch.setattr(runner_service.git_ops, "commit", lambda _repo_root, _message: None)
+    monkeypatch.setattr(runner_service.git_ops, "push", lambda _repo_root: None)
+
+    runner_service.run_once(repo_root, run_id="ordering-test")
+
+    assert calls[:2] == ["pull", "status-running"]
+
+
+def test_service_retries_push_after_fetch_first_rejection(repo_root: Path, monkeypatch) -> None:
+    calls: list[str] = []
+
+    monkeypatch.setattr(runner_service, "run_one", lambda _repo_root, runner_id="local-runner": {"status": "idle", "task_id": None})
+    monkeypatch.setattr(runner_service, "write_runner_status", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(runner_service.git_ops, "add_all", lambda _repo_root: None)
+    monkeypatch.setattr(runner_service.git_ops, "commit", lambda _repo_root, _message: None)
+    monkeypatch.setattr(runner_service.git_ops, "pull_rebase", lambda _repo_root: calls.append("pull") or None)
+
+    responses = [
+        SimpleNamespace(returncode=1, stdout="! [rejected] main -> main (fetch first)"),
+        SimpleNamespace(returncode=0, stdout="pushed"),
+    ]
+
+    def fake_push(_repo_root: Path):
+        calls.append("push")
+        return responses.pop(0)
+
+    monkeypatch.setattr(runner_service.git_ops, "push", fake_push)
+
+    runner_service.run_once(repo_root, run_id="push-retry-test")
+
+    assert calls == ["pull", "push", "pull", "push"]
 
 
 def test_health_returns_ok(client) -> None:
