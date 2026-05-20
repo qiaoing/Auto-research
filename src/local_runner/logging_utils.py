@@ -36,6 +36,10 @@ def task_agent_log_path(repo_root: Path, task_id: str) -> Path:
     return ensure_logs_dir(repo_root) / f"{safe_filename_component(task_id)}_agent.log"
 
 
+def task_orchestrator_log_path(repo_root: Path, task_id: str) -> Path:
+    return ensure_logs_dir(repo_root) / f"{safe_filename_component(task_id)}_orchestrator.log"
+
+
 def append_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:

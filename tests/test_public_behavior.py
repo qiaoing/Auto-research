@@ -4,6 +4,7 @@ import hashlib
 import hmac
 from pathlib import Path
 
+from local_runner import runner_service
 from local_runner import api_server
 from local_runner.locks import runner_lock_path
 from local_runner.orchestrator import TaskExecutionResult, run_one
@@ -43,6 +44,7 @@ def test_task_state_machine_claim_run_review(repo_root: Path) -> None:
     assert task["finished_at"]
     assert task["attempts"] == 1
     assert task["logs"] == ["logs/SIM-001_agent.log"]
+    assert task["changed_files"]
 
 
 def test_requires_human_approval_becomes_blocked_without_execution(repo_root: Path) -> None:
@@ -100,6 +102,60 @@ def test_attempts_at_max_attempts_is_marked_failed_without_execution(repo_root: 
     assert "max_attempts" in task["last_error"]
 
 
+def test_agent_failure_marks_running_task_failed(repo_root: Path) -> None:
+    def failing_executor(repo_root: Path, task: dict) -> TaskExecutionResult:
+        log_path = repo_root / "logs" / f"{task['id']}_agent.log"
+        log_path.write_text("failed\n", encoding="utf-8")
+        return TaskExecutionResult(False, log_path, "agent execution failed", "simulated failure")
+
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "SIM-FAIL",
+                "title": "Failing task",
+                "status": "pending",
+                "attempts": 0,
+                "max_attempts": 3,
+            }
+        ],
+    )
+
+    result = run_one(repo_root, executor=failing_executor)
+
+    assert result["status"] == FAILED
+    task = find_task(repo_root, "SIM-FAIL")
+    assert task["status"] == "failed"
+    assert task["finished_at"] is not None
+    assert task["last_error"] == "simulated failure"
+    assert task["logs"] == ["logs/SIM-FAIL_agent.log", "logs/SIM-FAIL_orchestrator.log"]
+
+
+def test_service_still_attempts_publish_when_orchestrator_raises(repo_root: Path, monkeypatch) -> None:
+    calls: list[str] = []
+
+    def fake_run_one(repo_root: Path, runner_id: str = "local-runner"):
+        (repo_root / "progress.md").write_text("# Progress\n- changed\n", encoding="utf-8")
+        raise RuntimeError("boom")
+
+    def record_call(name: str):
+        def inner(*args, **kwargs):
+            calls.append(name)
+            return None
+        return inner
+
+    monkeypatch.setattr(runner_service, "run_one", fake_run_one)
+    monkeypatch.setattr(runner_service.git_ops, "pull_rebase", record_call("pull"))
+    monkeypatch.setattr(runner_service.git_ops, "add_all", record_call("add"))
+    monkeypatch.setattr(runner_service.git_ops, "commit", record_call("commit"))
+    monkeypatch.setattr(runner_service.git_ops, "push", record_call("push"))
+
+    result = runner_service.run_once(repo_root, run_id="test-run")
+
+    assert result["status"] == "error"
+    assert calls == ["pull", "add", "commit", "push"]
+
+
 def test_health_returns_ok(client) -> None:
     response = client.get("/health")
 
@@ -127,6 +183,19 @@ def test_status_returns_task_counts(client, repo_root: Path, auth_headers: dict[
     assert counts["running"] == 1
     assert counts["review"] == 1
     assert counts["blocked"] == 1
+
+
+def test_status_includes_changed_files_when_git_dirty(client, repo_root: Path, auth_headers: dict[str, str], monkeypatch) -> None:
+    monkeypatch.setattr(api_server.git_ops, "is_git_repo", lambda _repo_root: True)
+    monkeypatch.setattr(api_server.git_ops, "is_dirty", lambda _repo_root: True)
+    monkeypatch.setattr(api_server.git_ops, "changed_files", lambda _repo_root: ["tasks/task_queue.json", "progress.md"])
+    monkeypatch.setattr(api_server.git_ops, "current_branch", lambda _repo_root: "main")
+    monkeypatch.setattr(api_server.git_ops, "current_head", lambda _repo_root: "abc1234")
+
+    response = client.get("/status", headers=auth_headers)
+
+    assert response.status_code == 200
+    assert response.json()["git"]["changed_files"] == ["tasks/task_queue.json", "progress.md"]
 
 
 def test_run_once_returns_busy_when_runner_lock_exists(client, repo_root: Path, auth_headers: dict[str, str]) -> None:
@@ -192,3 +261,14 @@ def test_logs_rejects_path_traversal(client, repo_root: Path, auth_headers: dict
 
     assert response.status_code in {400, 404, 422}
     assert "do not expose" not in response.text
+
+
+def test_logs_include_orchestrator_log(client, repo_root: Path, auth_headers: dict[str, str]) -> None:
+    (repo_root / "logs" / "SIM-ERR_orchestrator.log").write_text("orchestrator failure\n", encoding="utf-8")
+
+    response = client.get("/logs/SIM-ERR", headers=auth_headers)
+
+    assert response.status_code == 200
+    files = [entry["file"] for entry in response.json()["logs"]]
+    assert "orchestrator failure" in response.text
+    assert any(path.endswith("SIM-ERR_orchestrator.log") for path in files)

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from . import git_ops
-from .logging_utils import append_text, task_agent_log_path
+from .logging_utils import append_text, task_agent_log_path, task_orchestrator_log_path
 from .progress import append_progress
 from .security import resolve_prompt_file, safe_filename_component
 from .state_machine import BLOCKED, CLAIMED, FAILED, PENDING, REVIEW, RUNNING, normalize_task, transition_task
@@ -187,6 +187,62 @@ def _save_task(repo_root: Path, queue: dict[str, Any], task: dict[str, Any]) -> 
     return updated_queue
 
 
+def normalize_repo_path(path: str) -> str:
+    return Path(path).as_posix().lstrip("./")
+
+
+def collect_changed_files(repo_root: Path, before_files: set[str], extra_paths: list[str]) -> list[str]:
+    changed_files = {normalize_repo_path(path) for path in before_files}
+    if git_ops.is_git_repo(repo_root):
+        changed_files.update(normalize_repo_path(path) for path in git_ops.changed_files(repo_root))
+    changed_files.update(normalize_repo_path(path) for path in extra_paths if path)
+    return sorted(changed_files)
+
+
+def missing_expected_outputs(task: dict[str, Any], changed_files: list[str]) -> list[str]:
+    expected_outputs = task.get("expected_outputs") or []
+    changed = {normalize_repo_path(path) for path in changed_files}
+    missing: list[str] = []
+    for output in expected_outputs:
+        if not isinstance(output, str):
+            continue
+        normalized = normalize_repo_path(output)
+        if normalized not in changed:
+            missing.append(normalized)
+    return missing
+
+
+def fail_running_task(
+    repo_root: Path,
+    queue: dict[str, Any],
+    running_task: dict[str, Any],
+    *,
+    logs: list[str],
+    changed_files: list[str],
+    note: str,
+    error: str,
+) -> dict[str, Any]:
+    task_id = str(running_task.get("id", "unknown"))
+    orchestrator_log = task_orchestrator_log_path(repo_root, task_id)
+    append_text(orchestrator_log, f"{utc_now_iso()} {error}")
+    orchestrator_log_rel = str(orchestrator_log.relative_to(repo_root).as_posix())
+    if orchestrator_log_rel not in logs:
+        logs = [*logs, orchestrator_log_rel]
+
+    failed = transition_task(
+        running_task,
+        FAILED,
+        changed_files=changed_files,
+        logs=logs,
+        last_note=note,
+        last_error=error,
+        finished_at=utc_now_iso(),
+    )
+    _save_task(repo_root, queue, failed)
+    append_progress(repo_root, f"Task {task_id} failed: {error}.")
+    return {"executed": True, "status": FAILED, "task_id": task_id}
+
+
 def run_one(repo_root: Path, runner_id: str = "local-runner", executor: TaskExecutor | None = None) -> dict[str, Any]:
     repo_root = repo_root.resolve()
     executor = executor or default_task_executor
@@ -246,40 +302,65 @@ def run_one(repo_root: Path, runner_id: str = "local-runner", executor: TaskExec
     append_progress(repo_root, f"Task {task_id} started.")
 
     before_files = set(git_ops.changed_files(repo_root)) if git_ops.is_git_repo(repo_root) else set()
-    execution = executor(repo_root, running)
     logs = list(running.get("logs", []))
-    logs.append(str(execution.log_path.relative_to(repo_root).as_posix()))
+    common_paths = ["tasks/task_queue.json", "progress.md"]
+    try:
+        execution = executor(repo_root, running)
+        execution_log = str(execution.log_path.relative_to(repo_root).as_posix())
+        logs.append(execution_log)
+        common_paths.append(execution_log)
 
-    if not execution.success:
-        failed = transition_task(
+        if not execution.success:
+            changed_files = collect_changed_files(repo_root, before_files, common_paths)
+            return fail_running_task(
+                repo_root,
+                queue,
+                running,
+                logs=logs,
+                changed_files=changed_files,
+                note=execution.note,
+                error=execution.error or execution.note,
+            )
+
+        checks_ok, check_logs, check_error = run_quality_checks(repo_root, running)
+        logs.extend(check_logs)
+        common_paths.extend(check_logs)
+        changed_files = collect_changed_files(repo_root, before_files, common_paths)
+
+        if not checks_ok:
+            return fail_running_task(
+                repo_root,
+                queue,
+                running,
+                logs=logs,
+                changed_files=changed_files,
+                note="Quality checks failed.",
+                error=check_error or "quality checks failed",
+            )
+
+        missing_outputs = missing_expected_outputs(running, changed_files)
+        if missing_outputs:
+            return fail_running_task(
+                repo_root,
+                queue,
+                running,
+                logs=logs,
+                changed_files=changed_files,
+                note="Expected outputs were not produced.",
+                error=f"missing expected outputs: {', '.join(missing_outputs)}",
+            )
+    except Exception as exc:  # noqa: BLE001
+        changed_files = collect_changed_files(repo_root, before_files, common_paths)
+        return fail_running_task(
+            repo_root,
+            queue,
             running,
-            FAILED,
             logs=logs,
-            last_note=execution.note,
-            last_error=execution.error,
-            finished_at=utc_now_iso(),
+            changed_files=changed_files,
+            note="Orchestrator raised an exception.",
+            error=f"orchestrator exception: {exc}",
         )
-        _save_task(repo_root, queue, failed)
-        append_progress(repo_root, f"Task {task_id} failed: {execution.error or execution.note}.")
-        return {"executed": True, "status": FAILED, "task_id": task_id}
 
-    checks_ok, check_logs, check_error = run_quality_checks(repo_root, running)
-    logs.extend(check_logs)
-    if not checks_ok:
-        failed = transition_task(
-            running,
-            FAILED,
-            logs=logs,
-            last_note="Quality checks failed.",
-            last_error=check_error,
-            finished_at=utc_now_iso(),
-        )
-        _save_task(repo_root, queue, failed)
-        append_progress(repo_root, f"Task {task_id} failed quality checks: {check_error}.")
-        return {"executed": True, "status": FAILED, "task_id": task_id}
-
-    after_files = set(git_ops.changed_files(repo_root)) if git_ops.is_git_repo(repo_root) else set()
-    changed_files = sorted(after_files | before_files)
     review = transition_task(
         running,
         REVIEW,

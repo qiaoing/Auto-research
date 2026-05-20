@@ -52,6 +52,8 @@ def create_app(config: RunnerConfig | None = None, warn_missing_secrets: bool = 
         repo_root = app.state.config.repo_root
         tasks = get_tasks(repo_root)
         runner = read_runner_status(repo_root)
+        dirty = git_ops.is_dirty(repo_root) if git_ops.is_git_repo(repo_root) else False
+        changed_files = git_ops.changed_files(repo_root)[:20] if dirty else []
         return {
             "runner": {
                 "busy": is_runner_busy(repo_root),
@@ -63,7 +65,8 @@ def create_app(config: RunnerConfig | None = None, warn_missing_secrets: bool = 
             "git": {
                 "branch": git_ops.current_branch(repo_root),
                 "head": git_ops.current_head(repo_root),
-                "dirty": git_ops.is_dirty(repo_root) if git_ops.is_git_repo(repo_root) else False,
+                "dirty": dirty,
+                "changed_files": changed_files,
             },
             "tasks": count_by_status(tasks),
         }
@@ -87,6 +90,7 @@ def create_app(config: RunnerConfig | None = None, warn_missing_secrets: bool = 
             [
                 *(logs_dir.glob(f"{task_id}_agent.log")),
                 *(logs_dir.glob(f"{task_id}_check_*.log")),
+                *(logs_dir.glob(f"{task_id}_orchestrator.log")),
             ]
         )
         safe_logs = []

@@ -12,7 +12,7 @@ from local_runner.locks import is_runner_busy, runner_lock_path
 from local_runner.logging_utils import task_agent_log_path
 from local_runner.orchestrator import TaskExecutionResult, _prompt_path, normalize_quality_check_command, run_one
 
-from conftest import find_task, write_queue
+from conftest import find_task, read_queue, write_queue
 
 
 def successful_executor(repo_root: Path, task: dict) -> TaskExecutionResult:
@@ -130,6 +130,55 @@ def test_quality_check_launch_error_marks_task_failed(repo_root: Path, monkeypat
     assert task["status"] == "failed"
     assert "could not start quality check" in task["last_error"]
     assert task["finished_at"] is not None
+    assert task["logs"] == ["logs/QC-MISSING_agent.log", "logs/QC-MISSING_check_1.log", "logs/QC-MISSING_orchestrator.log"]
+
+
+def test_expected_outputs_missing_marks_task_failed(repo_root: Path) -> None:
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "MISSING-OUTPUTS",
+                "title": "Expected outputs missing",
+                "status": "pending",
+                "expected_outputs": ["src/controllers/pid.py", "tests/test_pid.py"],
+            }
+        ],
+    )
+
+    result = run_one(repo_root, executor=successful_executor)
+
+    assert result["status"] == "failed"
+    task = find_task(repo_root, "MISSING-OUTPUTS")
+    assert task["status"] == "failed"
+    assert "missing expected outputs" in task["last_error"]
+    assert "src/controllers/pid.py" in task["last_error"]
+    assert task["finished_at"] is not None
+
+
+def test_all_terminal_paths_do_not_leave_running_status(repo_root: Path) -> None:
+    write_queue(
+        repo_root,
+        [
+            {"id": "SUCCESS", "title": "Success", "status": "pending", "priority": 1},
+            {"id": "AGENT-FAIL", "title": "Agent fail", "status": "pending", "priority": 2},
+            {"id": "MISSING", "title": "Missing outputs", "status": "pending", "priority": 3, "expected_outputs": ["x.txt"]},
+        ],
+    )
+
+    def executor(repo_root: Path, task: dict) -> TaskExecutionResult:
+        log_path = task_agent_log_path(repo_root, task["id"])
+        log_path.write_text("ok\n", encoding="utf-8")
+        if task["id"] == "AGENT-FAIL":
+            return TaskExecutionResult(False, log_path, "agent execution failed", "boom")
+        return TaskExecutionResult(True, log_path, "ok")
+
+    assert run_one(repo_root, executor=executor)["status"] == "review"
+    assert run_one(repo_root, executor=executor)["status"] == "failed"
+    assert run_one(repo_root, executor=executor)["status"] == "failed"
+
+    statuses = {task["id"]: task["status"] for task in read_queue(repo_root)["tasks"]}
+    assert statuses == {"SUCCESS": "review", "AGENT-FAIL": "failed", "MISSING": "failed"}
 
 
 def test_malformed_attempts_are_failed_without_execution(repo_root: Path) -> None:

@@ -49,6 +49,7 @@ def run_once(repo_root: Path, run_id: str | None = None) -> dict[str, Any]:
         logger.info("runner busy; run %s not started", run_id)
         return {"accepted": False, "busy": True, "run_id": run_id, "status": "busy"}
 
+    result: dict[str, Any] | None = None
     write_runner_status(repo_root, current_task=None, last_run_id=run_id, last_run_at=utc_now_iso(), last_run_status="running")
     logger.info("runner run %s started", run_id)
     try:
@@ -67,19 +68,14 @@ def run_once(repo_root: Path, run_id: str | None = None) -> dict[str, Any]:
             last_run_status=str(result.get("status")),
         )
 
-        try:
-            _log_git_result(logger, "git add -A", git_ops.add_all(repo_root))
-            _log_git_result(logger, "git commit", git_ops.commit(repo_root, "agent: local runner update"))
-            _log_git_result(logger, "git push", git_ops.push(repo_root))
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("git publish step failed: %s", exc)
-
         logger.info("runner run %s finished with %s", run_id, result.get("status"))
         return {"accepted": True, "busy": False, "run_id": run_id, "status": result.get("status"), "result": result}
     except Exception as exc:  # noqa: BLE001
+        task_id = result.get("task_id") if result else None
         write_runner_status(
             repo_root,
             current_task=None,
+            last_task_id=task_id,
             last_run_id=run_id,
             last_run_at=utc_now_iso(),
             last_run_status="error",
@@ -88,6 +84,12 @@ def run_once(repo_root: Path, run_id: str | None = None) -> dict[str, Any]:
         logger.exception("runner run %s failed: %s", run_id, exc)
         return {"accepted": True, "busy": False, "run_id": run_id, "status": "error", "error": str(exc)}
     finally:
+        try:
+            _log_git_result(logger, "git add -A", git_ops.add_all(repo_root))
+            _log_git_result(logger, "git commit", git_ops.commit(repo_root, "agent: local runner update"))
+            _log_git_result(logger, "git push", git_ops.push(repo_root))
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("git publish step failed: %s", exc)
         lock.release()
 
 
