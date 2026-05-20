@@ -46,3 +46,9 @@
 - 2026-05-20T08:52:39+00:00 Task SIM-002 started.
 
 - 2026-05-20T08:52:40+00:00 Task SIM-002 failed quality checks: could not start quality check.
+
+- 2026-05-20T09:57:44+00:00 Task FIG-001 claimed by local-runner.
+
+- 2026-05-20T09:57:44+00:00 Task FIG-001 started.
+
+- 2026-05-20T09:57:45+00:00 Task FIG-001 failed: quality check command is not allowed: .

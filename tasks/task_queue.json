@@ -113,7 +113,7 @@
       "type": "plotting",
       "assigned_to": "opencode",
       "priority": 3,
-      "status": "pending",
+      "status": "failed",
       "prompt_file": "prompts/opencode/FIG-001.md",
       "expected_outputs": [
         "src/visualization/plot_trajectory.py",
@@ -123,17 +123,25 @@
         "python src/visualization/plot_trajectory.py --help"
       ],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 3,
-      "changed_files": [],
-      "logs": [],
-      "last_note": null,
-      "last_error": null,
-      "claimed_by": null,
-      "claimed_at": null,
-      "started_at": null,
-      "finished_at": null,
-      "last_update": null
+      "changed_files": [
+        "logs/FIG-001_agent.log",
+        "logs/runner_status.json",
+        "progress.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/FIG-001_agent.log",
+        "logs/FIG-001_orchestrator.log"
+      ],
+      "last_note": "Quality checks failed.",
+      "last_error": "quality check command is not allowed: ",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-20T09:57:44+00:00",
+      "started_at": "2026-05-20T09:57:44+00:00",
+      "finished_at": "2026-05-20T09:57:45+00:00",
+      "last_update": "2026-05-20T09:57:45+00:00"
     }
   ]
 }
