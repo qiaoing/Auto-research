@@ -90,3 +90,5 @@
 - 2026-05-20T15:20:48+00:00 Task RES-FORGETTING-FACTOR started.
 
 - 2026-05-20T15:29:31+00:00 Task RES-FORGETTING-FACTOR failed: orchestrator exception: 'gbk' codec can't decode byte 0xaa in position 9895: illegal multibyte sequence.
+
+- 2026-05-20T15:29:42+00:00 No pending task found for local runner.
