@@ -40,3 +40,9 @@
 - 2026-05-20T07:24:34+00:00 Task RUN-ONCE-SMOKE started.
 
 - 2026-05-20T07:24:35+00:00 Task RUN-ONCE-SMOKE moved to review.
+
+- 2026-05-20T08:52:39+00:00 Task SIM-002 claimed by local-runner.
+
+- 2026-05-20T08:52:39+00:00 Task SIM-002 started.
+
+- 2026-05-20T08:52:40+00:00 Task SIM-002 failed quality checks: could not start quality check.

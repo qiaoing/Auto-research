@@ -6,6 +6,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -130,32 +131,43 @@ def run_quality_checks(repo_root: Path, task: dict[str, Any]) -> tuple[bool, lis
         else:
             return False, log_paths, f"unsupported quality check format at index {index}"
 
-        if not is_allowed_quality_check(command):
+        command = normalize_quality_check_command(command)
+        if not command:
             return False, log_paths, f"quality check command is not allowed: {' '.join(command)}"
 
-        result = subprocess.run(
-            command,
-            cwd=repo_root,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
-        append_text(log_path, result.stdout)
+        try:
+            result = subprocess.run(
+                command,
+                cwd=repo_root,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+        except OSError as exc:
+            append_text(log_path, str(exc))
+            log_paths.append(str(log_path.relative_to(repo_root).as_posix()))
+            return False, log_paths, f"could not start quality check: {' '.join(command)} ({exc})"
+
+        append_text(log_path, result.stdout or "")
         log_paths.append(str(log_path.relative_to(repo_root).as_posix()))
         if result.returncode != 0:
             return False, log_paths, f"quality check failed: {' '.join(command)}"
     return True, log_paths, None
 
 
-def is_allowed_quality_check(command: list[str]) -> bool:
+def normalize_quality_check_command(command: list[str]) -> list[str]:
     if not command:
-        return False
+        return []
     executable = Path(command[0]).name.lower()
     if executable in {"pytest", "pytest.exe"}:
-        return True
-    if executable in {"python", "python.exe", "python3", "python3.exe"} and len(command) >= 3:
-        return command[1:3] == ["-m", "pytest"]
-    return False
+        return [sys.executable, "-m", "pytest", *command[1:]]
+    if executable in {"python", "python.exe", "python3", "python3.exe"} and len(command) >= 3 and command[1:3] == ["-m", "pytest"]:
+        return [sys.executable, *command[1:]]
+    return []
+
+
+def is_allowed_quality_check(command: list[str]) -> bool:
+    return bool(normalize_quality_check_command(command))
 
 
 def _read_attempt_limits(task: dict[str, Any]) -> tuple[int | None, int | None, str | None]:

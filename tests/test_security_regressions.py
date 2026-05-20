@@ -3,12 +3,14 @@ from __future__ import annotations
 import hashlib
 import hmac
 import os
+import subprocess
 import time
 from pathlib import Path
 
+from local_runner import orchestrator
 from local_runner.locks import is_runner_busy, runner_lock_path
 from local_runner.logging_utils import task_agent_log_path
-from local_runner.orchestrator import TaskExecutionResult, _prompt_path, run_one
+from local_runner.orchestrator import TaskExecutionResult, _prompt_path, normalize_quality_check_command, run_one
 
 from conftest import find_task, write_queue
 
@@ -69,6 +71,65 @@ def test_disallowed_quality_check_fails_without_running_command(repo_root: Path)
     assert result["status"] == "failed"
     assert not marker.exists()
     assert "not allowed" in find_task(repo_root, "QC-001")["last_error"]
+
+
+def test_pytest_quality_check_is_normalized_to_python_module(repo_root: Path, monkeypatch) -> None:
+    seen_commands: list[list[str]] = []
+
+    def fake_run(command, **kwargs):
+        seen_commands.append(list(command))
+        return subprocess.CompletedProcess(command, 0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    monkeypatch.setattr(orchestrator.git_ops, "is_git_repo", lambda _repo_root: False)
+
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "QC-PYTEST",
+                "title": "Normalize pytest",
+                "status": "pending",
+                "quality_checks": ["pytest tests/test_pid.py -q"],
+            }
+        ],
+    )
+
+    result = run_one(repo_root, executor=successful_executor)
+
+    assert result["status"] == "review"
+    assert seen_commands
+    assert seen_commands[0][0].lower().endswith("python.exe") or seen_commands[0][0].lower().endswith("python")
+    assert seen_commands[0][1:3] == ["-m", "pytest"]
+    assert seen_commands[0][-1] == "-q"
+
+
+def test_quality_check_launch_error_marks_task_failed(repo_root: Path, monkeypatch) -> None:
+    def raising_run(command, **kwargs):
+        raise FileNotFoundError("missing executable")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", raising_run)
+    monkeypatch.setattr(orchestrator.git_ops, "is_git_repo", lambda _repo_root: False)
+
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "QC-MISSING",
+                "title": "Missing quality executable",
+                "status": "pending",
+                "quality_checks": [["python", "-m", "pytest", "-q"]],
+            }
+        ],
+    )
+
+    result = run_one(repo_root, executor=successful_executor)
+
+    assert result["status"] == "failed"
+    task = find_task(repo_root, "QC-MISSING")
+    assert task["status"] == "failed"
+    assert "could not start quality check" in task["last_error"]
+    assert task["finished_at"] is not None
 
 
 def test_malformed_attempts_are_failed_without_execution(repo_root: Path) -> None:
