@@ -1,6 +1,6 @@
 {
-  "probe": "github-webhook-retest",
-  "created_at": "2026-05-20T12:58:41.288570+00:00",
-  "purpose": "Trigger local runner webhook path filtering for tasks/ changes.",
-  "nonce": "20260520T125841288590Z"
+  "probe": "github-webhook-cloud-hermes-retest",
+  "created_at": "2026-05-20T14:00:39.212515+00:00",
+  "purpose": "Verify GitHub push -> /webhook/github -> run-once using cloud Hermes /status token access.",
+  "nonce": "20260520T140039212533Z"
 }
