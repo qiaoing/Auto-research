@@ -72,3 +72,9 @@
 - 2026-05-20T13:01:09+00:00 No pending task found for local runner.
 
 - 2026-05-20T14:00:57+00:00 No pending task found for local runner.
+
+- 2026-05-20T14:55:28+00:00 Task RES-RL-DIFF-MPC claimed by local-runner.
+
+- 2026-05-20T14:55:28+00:00 Task RES-RL-DIFF-MPC started.
+
+- 2026-05-20T15:12:59+00:00 Task RES-RL-DIFF-MPC failed: orchestrator exception: 'gbk' codec can't decode byte 0x94 in position 906: illegal multibyte sequence.
