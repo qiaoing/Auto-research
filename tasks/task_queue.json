@@ -24,7 +24,15 @@
         "progress.md",
         "src/dynamics/underwater_vehicle.py",
         "tests/test_underwater_vehicle.py"
-      ]
+      ],
+      "attempts": 1,
+      "max_attempts": 3,
+      "logs": [],
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": "2026-05-19 23:01:22"
     },
     {
       "id": "SIM-002",
@@ -41,7 +49,17 @@
       "quality_checks": [
         "pytest tests/test_pid.py -q"
       ],
-      "requires_human_approval": false
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 3,
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     },
     {
       "id": "FIG-001",
@@ -58,7 +76,28 @@
       "quality_checks": [
         "python src/visualization/plot_trajectory.py --help"
       ],
-      "requires_human_approval": false
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 3,
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     }
+  ],
+  "schema_version": 2,
+  "states": [
+    "pending",
+    "claimed",
+    "running",
+    "review",
+    "done",
+    "failed",
+    "blocked",
+    "cancelled"
   ]
 }

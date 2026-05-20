@@ -1,53 +1,24 @@
-from pathlib import Path
-
-from scripts import local_orchestrator
-
-
-def test_resolve_cli_command_uses_windows_cmd_wrapper():
-    command = local_orchestrator.resolve_cli_command("codex")
-
-    assert Path(command).name == "codex.cmd"
+from local_runner.orchestrator import is_allowed_quality_check, select_pending_task
+from local_runner.security import safe_filename_component
 
 
-def test_build_agent_command_uses_resolved_launcher():
-    task = {
-        "assigned_to": "codex",
-        "prompt_file": "prompts/codex/SIM-001.md",
-    }
-
-    command = local_orchestrator.build_agent_command(task)
-
-    assert Path(command[0]).name == "codex.cmd"
-    assert command[1:3] == ["exec", "--full-auto"]
-
-
-def test_expected_output_touched_returns_true_for_matching_files():
-    task = {
-        "expected_outputs": [
-            "src/dynamics/underwater_vehicle.py",
-            "tests/test_underwater_vehicle.py",
+def test_select_pending_task_uses_priority_order():
+    task = select_pending_task(
+        [
+            {"id": "B", "status": "pending", "priority": 2},
+            {"id": "A", "status": "pending", "priority": 1},
+            {"id": "DONE", "status": "done", "priority": 0},
         ]
-    }
+    )
 
-    changed_files = [
-        "progress.md",
-        "src/dynamics/underwater_vehicle.py",
-    ]
-
-    assert local_orchestrator.expected_output_touched(task, changed_files)
+    assert task["id"] == "A"
 
 
-def test_expected_output_touched_returns_false_for_non_matching_files():
-    task = {
-        "expected_outputs": [
-            "src/dynamics/underwater_vehicle.py",
-            "tests/test_underwater_vehicle.py",
-        ]
-    }
+def test_quality_check_policy_allows_pytest_forms():
+    assert is_allowed_quality_check(["pytest", "-q"])
+    assert is_allowed_quality_check(["python", "-m", "pytest", "-q"])
+    assert not is_allowed_quality_check(["python", "-c", "print('unsafe')"])
 
-    changed_files = [
-        "progress.md",
-        "tasks/task_queue.json",
-    ]
 
-    assert not local_orchestrator.expected_output_touched(task, changed_files)
+def test_safe_filename_component_removes_path_separators():
+    assert safe_filename_component("../SIM-001") == "SIM-001"

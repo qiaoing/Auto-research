@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import sys
@@ -9,7 +8,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from local_runner.orchestrator import main
+from local_runner.api_server import main
 
 
 if __name__ == "__main__":

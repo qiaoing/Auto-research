@@ -27,3 +27,10 @@
 - 已为 `SIM-001` 补充测试，覆盖输出维度、零速度平衡、固定输入确定性和偏航角积分行为，文件位于 `tests/test_underwater_vehicle.py`。
 - 已验证 `python -m pytest -q` 通过。
 - [2026-05-19 23:01:22] 本地调度器已将 `SIM-001` 标记为完成。
+
+## 2026-05-20
+
+- 新增本地 Runner API 服务：支持 `/health`、`/status`、`/tasks`、`/run-once`、`/logs/{task_id}` 和 `/webhook/github`。
+- 本地任务状态机扩展为 `pending`、`claimed`、`running`、`review`、`done`、`failed`、`blocked`、`cancelled`。
+- 新增 Windows/Linux 启动脚本、systemd 用户服务安装脚本、部署文档和架构文档。
+- 安全限制：API 不接收任意命令或 prompt；webhook 使用 GitHub HMAC；硬件和人工审批任务会转为 `blocked`；质量检查仅允许 `pytest` 形式。
