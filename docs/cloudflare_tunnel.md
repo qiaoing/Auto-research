@@ -41,6 +41,32 @@ auto-runner.qiaoing.work -> http://127.0.0.1:8765
 
 Start the named tunnel using the command printed by the setup script.
 
+## If DNS Is Not Hosted By Cloudflare
+
+If `nslookup -type=NS qiaoing.work` shows non-Cloudflare nameservers, such as DNSPod, Cloudflare cannot publish the public DNS record for you.
+
+For this tunnel, add this CNAME record at the active DNS provider:
+
+```text
+Name: auto-runner
+Type: CNAME
+Value: eb724d5c-2e27-4405-8669-438d8ef5a213.cfargotunnel.com
+TTL: 600
+```
+
+After DNS propagation, verify:
+
+```powershell
+nslookup auto-runner.qiaoing.work 1.1.1.1
+curl.exe https://auto-runner.qiaoing.work/health
+```
+
+The local tunnel process must still be running:
+
+```powershell
+& "C:\Program Files (x86)\cloudflared\cloudflared.exe" tunnel --config "C:\Users\26938\.cloudflared\auto-research-local-runner.yml" run auto-research-local-runner
+```
+
 ## Hermes Call
 
 After the tunnel is running:
