@@ -95,17 +95,21 @@
       "requires_human_approval": false,
       "attempts": 1,
       "max_attempts": 3,
-      "changed_files": [],
-      "logs": [
-        "logs/SIM-002_agent.log"
+      "changed_files": [
+        "logs/runner_status.json",
+        "progress.md",
+        "tasks/task_queue.json"
       ],
-      "last_note": "Quality checks failed.",
-      "last_error": "could not start quality check: D:\\tool\\anaconda\\python.exe -m pytest tests/test_pid.py -q ([WinError 2] The system cannot find the file specified)",
+      "logs": [
+        "logs/SIM-002_orchestrator.log"
+      ],
+      "last_note": "Orchestrator raised an exception.",
+      "last_error": "orchestrator exception: 'gbk' codec can't decode byte 0x80 in position 9783: illegal multibyte sequence",
       "claimed_by": "local-runner",
-      "claimed_at": "2026-05-20T08:52:39+00:00",
-      "started_at": "2026-05-20T08:52:39+00:00",
-      "finished_at": "2026-05-20T08:52:40+00:00",
-      "last_update": "2026-05-20T08:52:40+00:00"
+      "claimed_at": "2026-05-20T10:01:16+00:00",
+      "started_at": "2026-05-20T10:01:16+00:00",
+      "finished_at": "2026-05-20T10:04:44+00:00",
+      "last_update": "2026-05-20T10:04:44+00:00"
     },
     {
       "id": "FIG-001",
