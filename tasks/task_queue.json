@@ -1,6 +1,17 @@
 {
   "project": "rl-mpc-hauv-research",
   "current_phase": "initialization",
+  "schema_version": 2,
+  "states": [
+    "blocked",
+    "cancelled",
+    "claimed",
+    "done",
+    "failed",
+    "pending",
+    "review",
+    "running"
+  ],
   "tasks": [
     {
       "id": "SIM-001",
@@ -40,7 +51,7 @@
       "type": "coding",
       "assigned_to": "codex",
       "priority": 0,
-      "status": "pending",
+      "status": "review",
       "expected_outputs": [
         "tasks/task_queue.json",
         "progress.md",
@@ -48,16 +59,23 @@
       ],
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 1,
-      "changed_files": [],
-      "logs": [],
-      "last_note": null,
+      "changed_files": [
+        "logs/runner_status.json",
+        "progress.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/RUN-ONCE-SMOKE_agent.log"
+      ],
+      "last_note": "Local execution completed; waiting for Hermes review.",
       "last_error": null,
-      "claimed_by": null,
-      "claimed_at": null,
-      "started_at": null,
-      "finished_at": null
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-20T07:24:34+00:00",
+      "started_at": "2026-05-20T07:24:34+00:00",
+      "finished_at": "2026-05-20T07:24:35+00:00",
+      "last_update": "2026-05-20T07:24:35+00:00"
     },
     {
       "id": "SIM-002",
@@ -84,7 +102,8 @@
       "claimed_by": null,
       "claimed_at": null,
       "started_at": null,
-      "finished_at": null
+      "finished_at": null,
+      "last_update": null
     },
     {
       "id": "FIG-001",
@@ -111,18 +130,8 @@
       "claimed_by": null,
       "claimed_at": null,
       "started_at": null,
-      "finished_at": null
+      "finished_at": null,
+      "last_update": null
     }
-  ],
-  "schema_version": 2,
-  "states": [
-    "pending",
-    "claimed",
-    "running",
-    "review",
-    "done",
-    "failed",
-    "blocked",
-    "cancelled"
   ]
 }

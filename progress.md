@@ -34,3 +34,9 @@
 - 本地任务状态机扩展为 `pending`、`claimed`、`running`、`review`、`done`、`failed`、`blocked`、`cancelled`。
 - 新增 Windows/Linux 启动脚本、systemd 用户服务安装脚本、部署文档和架构文档。
 - 安全限制：API 不接收任意命令或 prompt；webhook 使用 GitHub HMAC；硬件和人工审批任务会转为 `blocked`；质量检查仅允许 `pytest` 形式。
+
+- 2026-05-20T07:24:34+00:00 Task RUN-ONCE-SMOKE claimed by local-runner.
+
+- 2026-05-20T07:24:34+00:00 Task RUN-ONCE-SMOKE started.
+
+- 2026-05-20T07:24:35+00:00 Task RUN-ONCE-SMOKE moved to review.
