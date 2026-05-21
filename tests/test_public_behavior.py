@@ -106,11 +106,11 @@ def test_second_turn_merged_prompt_includes_first_turn_transcript(repo_root: Pat
         ],
     )
 
-    prompts: list[str] = []
+    captured: list[tuple[list[str], str | None]] = []
     monkeypatch.setattr("local_runner.orchestrator.shutil.which", lambda _name: "codex")
 
-    def fake_run_capture(command, _repo_root):
-        prompts.append(command[-1])
+    def fake_run_capture(command, _repo_root, input_text=None):
+        captured.append((command, input_text))
         return SimpleNamespace(returncode=0, stdout="ok")
 
     monkeypatch.setattr("local_runner.orchestrator._run_capture", fake_run_capture)
@@ -120,10 +120,12 @@ def test_second_turn_merged_prompt_includes_first_turn_transcript(repo_root: Pat
 
     assert first["status"] == REVIEW
     assert second["status"] == REVIEW
-    assert len(prompts) == 2
-    assert "First turn prompt." in prompts[0]
-    assert "Turn TURN-1" in prompts[1]
-    assert "Second turn prompt." in prompts[1]
+    assert len(captured) == 2
+    assert captured[0][0][-1] == "-"
+    assert captured[1][0][-1] == "-"
+    assert "First turn prompt." in (captured[0][1] or "")
+    assert "Turn TURN-1" in (captured[1][1] or "")
+    assert "Second turn prompt." in (captured[1][1] or "")
 
 
 def test_requires_human_approval_becomes_blocked_without_execution(repo_root: Path) -> None:
@@ -231,7 +233,7 @@ def test_multi_turn_failure_keeps_transcript_and_merged_prompt(repo_root: Path, 
     monkeypatch.setattr("local_runner.orchestrator.shutil.which", lambda _name: "codex")
     monkeypatch.setattr(
         "local_runner.orchestrator._run_capture",
-        lambda _command, _repo_root: SimpleNamespace(returncode=7, stdout="execution failed"),
+        lambda _command, _repo_root, input_text=None: SimpleNamespace(returncode=7, stdout="execution failed"),
     )
 
     result = run_one(repo_root)
@@ -410,7 +412,7 @@ def test_custom_codex_template_receives_merged_prompt_file(repo_root: Path, monk
     )
     monkeypatch.setattr(
         "local_runner.orchestrator._run_capture",
-        lambda command, _repo_root: captured.append(command) or SimpleNamespace(returncode=0, stdout="ok"),
+        lambda command, _repo_root, input_text=None: captured.append(command) or SimpleNamespace(returncode=0, stdout="ok"),
     )
 
     result = run_one(repo_root)
@@ -441,13 +443,16 @@ def test_single_turn_codex_task_does_not_create_session_files(repo_root: Path, m
         ],
     )
     monkeypatch.setattr("local_runner.orchestrator.shutil.which", lambda _name: "codex")
+    captured: list[tuple[list[str], str | None]] = []
     monkeypatch.setattr(
         "local_runner.orchestrator._run_capture",
-        lambda _command, _repo_root: SimpleNamespace(returncode=0, stdout="ok"),
+        lambda _command, _repo_root, input_text=None: captured.append((_command, input_text)) or SimpleNamespace(returncode=0, stdout="ok"),
     )
 
     result = run_one(repo_root)
     assert result["status"] == REVIEW
+    assert captured and captured[0][0][-1] == "-"
+    assert "single turn" in (captured[0][1] or "")
     assert not (repo_root / "state" / "codex_sessions").exists()
 
 

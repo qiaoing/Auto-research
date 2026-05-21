@@ -97,26 +97,28 @@ def _subprocess_env() -> dict[str, str]:
     return env
 
 
-def _run_capture(command: list[str], repo_root: Path) -> subprocess.CompletedProcess[str]:
+def _run_capture(command: list[str], repo_root: Path, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
         cwd=repo_root,
         text=True,
         encoding="utf-8",
         errors="replace",
+        input=input_text,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         env=_subprocess_env(),
     )
 
 
-def _codex_command(executable: str, repo_root: Path, prompt_text: str) -> list[str]:
+def _codex_command(executable: str, repo_root: Path) -> list[str]:
     base_args = shlex.split(os.environ.get("LOCAL_RUNNER_CODEX_ARGS", "exec"), posix=os.name != "nt")
     if not base_args:
         base_args = ["exec"]
     if "--cd" not in base_args:
         base_args.extend(["--cd", str(repo_root)])
-    return [executable, *base_args, prompt_text]
+    # Use stdin prompt mode to avoid Windows command-line length limits on large merged prompts.
+    return [executable, *base_args, "-"]
 
 
 def _write_merged_prompt_file(repo_root: Path, task: dict[str, Any], merged_prompt: str) -> Path | None:
@@ -165,6 +167,7 @@ def default_task_executor(repo_root: Path, task: dict[str, Any]) -> TaskExecutio
     if merged_prompt_file is not None:
         task["_merged_prompt_file"] = str(merged_prompt_file)
 
+    use_stdin_prompt = False
     if template:
         command = _command_from_template(template, task, repo_root, log_path)
     elif agent_kind == "opencode":
@@ -182,13 +185,14 @@ def default_task_executor(repo_root: Path, task: dict[str, Any]) -> TaskExecutio
             message = "codex executable not found; set LOCAL_RUNNER_CODEX_COMMAND or enable dry-run"
             append_text(log_path, message)
             return TaskExecutionResult(False, log_path, "agent command unavailable", message)
-        command = _codex_command(executable, repo_root, merged_prompt)
+        command = _codex_command(executable, repo_root)
+        use_stdin_prompt = True
     else:
         message = f"unsupported assigned_to value: {assigned_to}"
         append_text(log_path, message)
         return TaskExecutionResult(False, log_path, "agent command unavailable", message)
 
-    result = _run_capture(command, repo_root)
+    result = _run_capture(command, repo_root, input_text=merged_prompt if use_stdin_prompt else None)
     append_text(log_path, result.stdout)
     if result.returncode != 0:
         return TaskExecutionResult(False, log_path, "agent execution failed", result.stdout.strip())
