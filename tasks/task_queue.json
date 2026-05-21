@@ -317,7 +317,7 @@
       "id": "MT-SMOKE-002",
       "title": "Multi-turn Codex smoke test: second turn references first turn",
       "priority": 1,
-      "status": "pending",
+      "status": "failed",
       "prompt_file": "prompts/codex/MT-SMOKE-002.md",
       "expected_outputs": [
         "state/codex_sessions/planner/multi-turn-smoke/transcript.md",
@@ -330,18 +330,30 @@
       "multi_turn": true,
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 1,
       "created_by": "cloud-hermes",
-      "changed_files": [],
-      "logs": [],
-      "last_note": null,
-      "last_error": null,
-      "last_update": null,
-      "claimed_by": null,
-      "claimed_at": null,
-      "started_at": null,
-      "finished_at": null
+      "changed_files": [
+        "logs/MT-SMOKE-002_agent.log",
+        "logs/runner_status.json",
+        "progress.md",
+        "state/codex_sessions/planner/multi-turn-smoke/metadata.json",
+        "state/codex_sessions/planner/multi-turn-smoke/transcript.md",
+        "state/codex_sessions/planner/multi-turn-smoke/turns/MT-SMOKE-002_merged_prompt.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/MT-SMOKE-002_agent.log",
+        "logs/MT-SMOKE-002_orchestrator.log"
+      ],
+      "last_note": "agent execution failed",
+      "last_error": "������̫����",
+      "last_update": "2026-05-21T04:04:03+00:00",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-21T04:04:03+00:00",
+      "started_at": "2026-05-21T04:04:03+00:00",
+      "finished_at": "2026-05-21T04:04:03+00:00",
+      "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-smoke\\turns\\MT-SMOKE-002_merged_prompt.md"
     }
   ]
 }

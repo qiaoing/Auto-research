@@ -1,14 +1,20 @@
 {
   "instance": "planner",
   "conversation_id": "multi-turn-smoke",
-  "last_task_id": "MT-SMOKE-001",
-  "last_update": "2026-05-21T04:03:53+00:00",
+  "last_task_id": "MT-SMOKE-002",
+  "last_update": "2026-05-21T04:04:03+00:00",
   "turns": [
     {
       "task_id": "MT-SMOKE-001",
       "timestamp": "2026-05-21T04:03:53+00:00",
       "updated_at": "2026-05-21T04:03:53+00:00",
       "log_path": "logs/MT-SMOKE-001_agent.log"
+    },
+    {
+      "task_id": "MT-SMOKE-002",
+      "timestamp": "2026-05-21T04:04:03+00:00",
+      "updated_at": "2026-05-21T04:04:03+00:00",
+      "log_path": "logs/MT-SMOKE-002_agent.log"
     }
   ]
 }
