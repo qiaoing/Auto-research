@@ -950,3 +950,11 @@ tokens used
 - 2026-05-21T15:47:55+00:00 Task MATLAB-LEAF-001 started.
 
 - 2026-05-21T15:50:53+00:00 Task MATLAB-LEAF-001 failed: missing expected outputs: matlab/leaf_mpc/models/uuv_model_step.m, matlab/leaf_mpc/trajectory/traj_fig8_3d.m, matlab/leaf_mpc/main/run_smoke_tests.m.
+
+## 2026-05-22
+
+- 已完成 LEAF-MPC MATLAB 仿真平台第一版骨架，目录位于 `matlab/leaf_mpc/`。
+- 已实现 6DOF UUV 离散模型、3D 八字轨迹、baseline MPC、MATLAB fallback 求解器、RL 权重映射与训练循环接口。
+- 已补充 smoke tests、baseline / compare / RL 主入口脚本、绘图与动画接口。
+- 由于当前环境没有 MATLAB / Octave / numpy / scipy / matplotlib，已执行 Python 标准库级验证脚本，生成可复现占位结果文件，用于打通论文图表与结果管线。
+- 验证摘要见 `logs/leaf_mpc_validation.json`；关键产物包括 `matlab/leaf_mpc/figures/*.png`、`matlab/leaf_mpc/figures/uuv_tracking_animation.gif`、`matlab/leaf_mpc/results/*.mat`。
