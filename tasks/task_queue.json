@@ -760,6 +760,152 @@
       "started_at": "2026-05-21T09:43:29+00:00",
       "finished_at": "2026-05-21T10:02:55+00:00",
       "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\rlmpc5\\rl-dmpc-literature\\turns\\RLDMPC-LIT-005_merged_prompt.md"
+    },
+    {
+      "id": "MATLAB-LEAF-001",
+      "title": "MATLAB-LEAF-001：项目骨架/模型/轨迹",
+      "type": "coding",
+      "assigned_to": "codex:sim",
+      "conversation_id": "leaf-mpc-matlab-sim-20260521-sim",
+      "codex_instance": "sim",
+      "multi_turn": true,
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MATLAB-LEAF-001.md",
+      "expected_outputs": [
+        "matlab/leaf_mpc/models/uuv_model_step.m",
+        "matlab/leaf_mpc/trajectory/traj_fig8_3d.m",
+        "matlab/leaf_mpc/main/run_smoke_tests.m"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T15:47:31Z",
+      "review_requirements": [
+        "指定 expected_outputs 存在且非空（图/结果文件可由脚本生成）",
+        "MATLAB 代码中文注释充分，接口与任务要求一致",
+        "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
+        "更新 progress.md 并记录运行/验证命令"
+      ]
+    },
+    {
+      "id": "MATLAB-LEAF-002",
+      "title": "MATLAB-LEAF-002：baseline MPC",
+      "type": "coding",
+      "assigned_to": "codex:mpc",
+      "conversation_id": "leaf-mpc-matlab-sim-20260521",
+      "codex_instance": "mpc",
+      "multi_turn": true,
+      "priority": 1,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MATLAB-LEAF-002.md",
+      "expected_outputs": [
+        "matlab/leaf_mpc/main/run_baseline_mpc.m",
+        "matlab/leaf_mpc/mpc/mpc_solver_custom.m",
+        "matlab/leaf_mpc/figures/baseline_3d_tracking.png",
+        "matlab/leaf_mpc/results/baseline_mpc_result.mat"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T15:47:31Z",
+      "review_requirements": [
+        "指定 expected_outputs 存在且非空（图/结果文件可由脚本生成）",
+        "MATLAB 代码中文注释充分，接口与任务要求一致",
+        "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
+        "更新 progress.md 并记录运行/验证命令"
+      ]
+    },
+    {
+      "id": "MATLAB-LEAF-003",
+      "title": "MATLAB-LEAF-003：双求解器",
+      "type": "coding",
+      "assigned_to": "codex:mpc",
+      "conversation_id": "leaf-mpc-matlab-sim-20260521",
+      "codex_instance": "mpc",
+      "multi_turn": true,
+      "priority": 2,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MATLAB-LEAF-003.md",
+      "expected_outputs": [
+        "matlab/leaf_mpc/mpc/mpc_solver_matlab.m",
+        "matlab/leaf_mpc/main/run_compare_experiments.m",
+        "matlab/leaf_mpc/results/solver_comparison.mat"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T15:47:31Z",
+      "review_requirements": [
+        "指定 expected_outputs 存在且非空（图/结果文件可由脚本生成）",
+        "MATLAB 代码中文注释充分，接口与任务要求一致",
+        "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
+        "更新 progress.md 并记录运行/验证命令"
+      ]
+    },
+    {
+      "id": "MATLAB-LEAF-004",
+      "title": "MATLAB-LEAF-004：RL与动画",
+      "type": "coding",
+      "assigned_to": "codex:rl",
+      "conversation_id": "leaf-mpc-matlab-sim-20260521-rl",
+      "codex_instance": "rl",
+      "multi_turn": true,
+      "priority": 3,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MATLAB-LEAF-004.md",
+      "expected_outputs": [
+        "matlab/leaf_mpc/rl/rl_train_loop.m",
+        "matlab/leaf_mpc/main/run_rl_leaf_mpc.m",
+        "matlab/leaf_mpc/utils/animate_uuv_3d.m",
+        "matlab/leaf_mpc/results/rl_training_log.mat"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T15:47:31Z",
+      "review_requirements": [
+        "指定 expected_outputs 存在且非空（图/结果文件可由脚本生成）",
+        "MATLAB 代码中文注释充分，接口与任务要求一致",
+        "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
+        "更新 progress.md 并记录运行/验证命令"
+      ]
+    },
+    {
+      "id": "MATLAB-LEAF-005",
+      "title": "MATLAB-LEAF-005：最终审查修复",
+      "type": "coding",
+      "assigned_to": "codex:reviewer",
+      "conversation_id": "leaf-mpc-matlab-sim-20260521-reviewer",
+      "codex_instance": "reviewer",
+      "multi_turn": true,
+      "priority": 4,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MATLAB-LEAF-005.md",
+      "expected_outputs": [
+        "reports/matlab_leaf_mpc_delivery.md",
+        "matlab/leaf_mpc/README.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 2,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T15:47:31Z",
+      "review_requirements": [
+        "指定 expected_outputs 存在且非空（图/结果文件可由脚本生成）",
+        "MATLAB 代码中文注释充分，接口与任务要求一致",
+        "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
+        "更新 progress.md 并记录运行/验证命令"
+      ]
     }
   ]
 }
