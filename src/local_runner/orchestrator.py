@@ -20,6 +20,7 @@ from .codex_sessions import (
     conversation_id_from_task,
     is_codex_assignee,
     is_multi_turn_task,
+    merged_prompt_path,
     transcript_path,
 )
 from .logging_utils import append_text, task_agent_log_path, task_orchestrator_log_path
@@ -71,9 +72,18 @@ def _prompt_path(repo_root: Path, task: dict[str, Any]) -> Path | None:
 
 def _command_from_template(template: str, task: dict[str, Any], repo_root: Path, log_path: Path) -> list[str]:
     prompt_path = _prompt_path(repo_root, task)
+    codex_instance = codex_instance_from_task(task)
+    conversation_id = conversation_id_from_task(task) or ""
+    merged_prompt_file = task.get("_merged_prompt_file") or ""
     values = {
         "task_id": str(task.get("id", "")),
         "prompt_file": str(prompt_path or ""),
+        "merged_prompt_file": str(merged_prompt_file),
+        "conversation_id": conversation_id,
+        "thread_id": str(task.get("thread_id") or ""),
+        "codex_instance": codex_instance,
+        "agent_instance": codex_instance,
+        "multi_turn": str(bool(is_multi_turn_task(task))).lower(),
         "repo_root": str(repo_root),
         "log_file": str(log_path),
     }
@@ -109,6 +119,20 @@ def _codex_command(executable: str, repo_root: Path, prompt_text: str) -> list[s
     return [executable, *base_args, prompt_text]
 
 
+def _write_merged_prompt_file(repo_root: Path, task: dict[str, Any], merged_prompt: str) -> Path | None:
+    if not is_multi_turn_task(task):
+        return None
+    conversation_id = conversation_id_from_task(task)
+    if not conversation_id:
+        return None
+    instance = codex_instance_from_task(task)
+    task_id = str(task.get("id", "unknown"))
+    path = merged_prompt_path(repo_root, instance, conversation_id, task_id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(merged_prompt, encoding="utf-8", newline="\n")
+    return path
+
+
 def default_task_executor(repo_root: Path, task: dict[str, Any]) -> TaskExecutionResult:
     task_id = str(task.get("id", "unknown"))
     assigned_to = str(task.get("assigned_to", "codex")).lower()
@@ -136,6 +160,10 @@ def default_task_executor(repo_root: Path, task: dict[str, Any]) -> TaskExecutio
     template = os.environ.get(env_template_name)
     prompt_path = _prompt_path(repo_root, task)
     prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
+    merged_prompt = build_codex_prompt(repo_root, task, prompt_text) if is_codex_assignee(assigned_to) else prompt_text
+    merged_prompt_file = _write_merged_prompt_file(repo_root, task, merged_prompt)
+    if merged_prompt_file is not None:
+        task["_merged_prompt_file"] = str(merged_prompt_file)
 
     if template:
         command = _command_from_template(template, task, repo_root, log_path)
@@ -154,7 +182,7 @@ def default_task_executor(repo_root: Path, task: dict[str, Any]) -> TaskExecutio
             message = "codex executable not found; set LOCAL_RUNNER_CODEX_COMMAND or enable dry-run"
             append_text(log_path, message)
             return TaskExecutionResult(False, log_path, "agent command unavailable", message)
-        command = _codex_command(executable, repo_root, build_codex_prompt(repo_root, task, prompt_text))
+        command = _codex_command(executable, repo_root, merged_prompt)
     else:
         message = f"unsupported assigned_to value: {assigned_to}"
         append_text(log_path, message)
@@ -188,8 +216,12 @@ def _record_multi_turn_if_needed(repo_root: Path, task: dict[str, Any], executio
     task_id = str(task.get("id", "unknown"))
     if path.exists() and f"## Turn {task_id}" in path.read_text(encoding="utf-8", errors="replace"):
         return
-    prompt_path = _prompt_path(repo_root, task)
-    prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
+    merged_prompt_file = task.get("_merged_prompt_file")
+    if isinstance(merged_prompt_file, str) and merged_prompt_file:
+        prompt_path = Path(merged_prompt_file)
+    else:
+        prompt_path = _prompt_path(repo_root, task)
+    prompt_text = prompt_path.read_text(encoding="utf-8", errors="replace") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
     agent_output = execution.log_path.read_text(encoding="utf-8", errors="replace") if execution.log_path.exists() else execution.note
     append_turn(
         repo_root,
@@ -387,6 +419,7 @@ def run_one(repo_root: Path, runner_id: str = "local-runner", executor: TaskExec
         conversation_id = conversation_id_from_task(running)
         if conversation_id:
             common_paths.append(str(transcript_path(repo_root, instance, conversation_id).relative_to(repo_root).as_posix()))
+            common_paths.append(str(merged_prompt_path(repo_root, instance, conversation_id, task_id).relative_to(repo_root).as_posix()))
     try:
         execution = executor(repo_root, running)
         _record_multi_turn_if_needed(repo_root, running, execution)

@@ -3,6 +3,7 @@ from local_runner.codex_sessions import (
     codex_instance_from_task,
     conversation_id_from_task,
     is_multi_turn_task,
+    merged_prompt_path,
     transcript_path,
 )
 from local_runner.orchestrator import is_allowed_quality_check, select_pending_task
@@ -53,3 +54,20 @@ def test_multi_turn_prompt_includes_prior_transcript(repo_root):
     assert "Previous decision: use pytest." in prompt
     assert "Continue with controller tests." in prompt
     assert "local Codex instance `planner`" in prompt
+
+
+def test_conversation_path_sanitization_prevents_escape(repo_root):
+    task = {"assigned_to": "codex:plan/../ner", "conversation_id": "../thread\\unsafe"}
+    instance = codex_instance_from_task(task)
+    conversation_id = conversation_id_from_task(task)
+    assert instance == "plan_.._ner"
+    assert conversation_id == "thread_unsafe"
+    path = transcript_path(repo_root, instance, conversation_id)
+    assert str(path.resolve()).startswith(str((repo_root / "state" / "codex_sessions").resolve()))
+
+
+def test_merged_prompt_file_uses_sanitized_conversation_components(repo_root):
+    task = {"id": "TURN-001", "assigned_to": "codex:planner", "conversation_id": "../x"}
+    path = merged_prompt_path(repo_root, codex_instance_from_task(task), conversation_id_from_task(task) or "x", task["id"])
+    assert "state" in str(path)
+    assert ".." not in str(path.relative_to(repo_root))

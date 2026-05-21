@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .security import safe_filename_component
+from .security import is_relative_to, safe_filename_component
 from .time_utils import utc_now_iso
 
 DEFAULT_CODEX_INSTANCE = "default"
@@ -41,8 +41,20 @@ def is_multi_turn_task(task: dict[str, Any]) -> bool:
     return is_codex_assignee(str(task.get("assigned_to", "codex"))) and conversation_id_from_task(task) is not None
 
 
+def sessions_root(repo_root: Path) -> Path:
+    root = (repo_root / "state" / "codex_sessions").resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
 def conversation_dir(repo_root: Path, instance: str, conversation_id: str) -> Path:
-    return repo_root / "state" / "codex_sessions" / safe_filename_component(instance) / safe_filename_component(conversation_id)
+    root = sessions_root(repo_root)
+    instance_component = safe_filename_component(instance)
+    conversation_component = safe_filename_component(conversation_id)
+    candidate = (root / instance_component / conversation_component).resolve()
+    if not is_relative_to(candidate, root):
+        raise ValueError("conversation path escapes codex session root")
+    return candidate
 
 
 def transcript_path(repo_root: Path, instance: str, conversation_id: str) -> Path:
@@ -51,6 +63,16 @@ def transcript_path(repo_root: Path, instance: str, conversation_id: str) -> Pat
 
 def metadata_path(repo_root: Path, instance: str, conversation_id: str) -> Path:
     return conversation_dir(repo_root, instance, conversation_id) / "metadata.json"
+
+
+def turns_dir(repo_root: Path, instance: str, conversation_id: str) -> Path:
+    path = conversation_dir(repo_root, instance, conversation_id) / "turns"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def merged_prompt_path(repo_root: Path, instance: str, conversation_id: str, task_id: str) -> Path:
+    return turns_dir(repo_root, instance, conversation_id) / f"{safe_filename_component(task_id)}_merged_prompt.md"
 
 
 def load_transcript(repo_root: Path, instance: str, conversation_id: str, max_chars: int = MAX_TRANSCRIPT_CHARS) -> str:
@@ -92,11 +114,17 @@ def append_turn(
         except json.JSONDecodeError:
             metadata = {}
     turns = list(metadata.get("turns", []))
+    try:
+        relative_log_path = str(log_path.resolve().relative_to(repo_root.resolve()).as_posix())
+    except ValueError:
+        relative_log_path = log_path.name
+
     turns.append(
         {
             "task_id": task_id,
+            "timestamp": now,
             "updated_at": now,
-            "log_path": str(log_path.relative_to(repo_root).as_posix()),
+            "log_path": relative_log_path,
         }
     )
     metadata.update(

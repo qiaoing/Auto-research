@@ -7,7 +7,7 @@ from pathlib import Path
 
 from local_runner import runner_service
 from local_runner import api_server
-from local_runner.codex_sessions import transcript_path
+from local_runner.codex_sessions import merged_prompt_path, transcript_path
 from local_runner.locks import runner_lock_path
 from local_runner.orchestrator import TaskExecutionResult, run_one
 from local_runner.state_machine import BLOCKED, FAILED, REVIEW
@@ -73,6 +73,57 @@ def test_multi_turn_codex_task_records_transcript(repo_root: Path) -> None:
     assert "First turn" in transcript
     task = find_task(repo_root, "THREAD-001")
     assert "state/codex_sessions/planner/ctrl-thread/transcript.md" in task["changed_files"]
+
+
+def test_second_turn_merged_prompt_includes_first_turn_transcript(repo_root: Path, monkeypatch) -> None:
+    prompt_dir = repo_root / "prompts" / "codex"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    (prompt_dir / "TURN-1.md").write_text("First turn prompt.", encoding="utf-8")
+    (prompt_dir / "TURN-2.md").write_text("Second turn prompt.", encoding="utf-8")
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "TURN-1",
+                "title": "First turn",
+                "assigned_to": "codex:planner",
+                "conversation_id": "ctrl-thread",
+                "status": "pending",
+                "prompt_file": "prompts/codex/TURN-1.md",
+                "expected_outputs": [],
+                "quality_checks": [],
+            },
+            {
+                "id": "TURN-2",
+                "title": "Second turn",
+                "assigned_to": "codex:planner",
+                "conversation_id": "ctrl-thread",
+                "status": "pending",
+                "prompt_file": "prompts/codex/TURN-2.md",
+                "expected_outputs": [],
+                "quality_checks": [],
+            },
+        ],
+    )
+
+    prompts: list[str] = []
+    monkeypatch.setattr("local_runner.orchestrator.shutil.which", lambda _name: "codex")
+
+    def fake_run_capture(command, _repo_root):
+        prompts.append(command[-1])
+        return SimpleNamespace(returncode=0, stdout="ok")
+
+    monkeypatch.setattr("local_runner.orchestrator._run_capture", fake_run_capture)
+
+    first = run_one(repo_root)
+    second = run_one(repo_root)
+
+    assert first["status"] == REVIEW
+    assert second["status"] == REVIEW
+    assert len(prompts) == 2
+    assert "First turn prompt." in prompts[0]
+    assert "Turn TURN-1" in prompts[1]
+    assert "Second turn prompt." in prompts[1]
 
 
 def test_requires_human_approval_becomes_blocked_without_execution(repo_root: Path) -> None:
@@ -157,6 +208,42 @@ def test_agent_failure_marks_running_task_failed(repo_root: Path) -> None:
     assert task["finished_at"] is not None
     assert task["last_error"] == "simulated failure"
     assert task["logs"] == ["logs/SIM-FAIL_agent.log", "logs/SIM-FAIL_orchestrator.log"]
+
+
+def test_multi_turn_failure_keeps_transcript_and_merged_prompt(repo_root: Path, monkeypatch) -> None:
+    prompt_dir = repo_root / "prompts" / "codex"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    (prompt_dir / "TURN-FAIL.md").write_text("Fail this turn.", encoding="utf-8")
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "TURN-FAIL",
+                "title": "Failing multi-turn",
+                "assigned_to": "codex:planner",
+                "conversation_id": "ctrl-thread",
+                "status": "pending",
+                "prompt_file": "prompts/codex/TURN-FAIL.md",
+            }
+        ],
+    )
+
+    monkeypatch.setattr("local_runner.orchestrator.shutil.which", lambda _name: "codex")
+    monkeypatch.setattr(
+        "local_runner.orchestrator._run_capture",
+        lambda _command, _repo_root: SimpleNamespace(returncode=7, stdout="execution failed"),
+    )
+
+    result = run_one(repo_root)
+    assert result["status"] == FAILED
+
+    task = find_task(repo_root, "TURN-FAIL")
+    assert task["status"] == "failed"
+    tpath = transcript_path(repo_root, "planner", "ctrl-thread")
+    assert tpath.exists()
+    assert "Turn TURN-FAIL" in tpath.read_text(encoding="utf-8", errors="replace")
+    mpath = merged_prompt_path(repo_root, "planner", "ctrl-thread", "TURN-FAIL")
+    assert mpath.exists()
 
 
 def test_service_still_attempts_publish_when_orchestrator_raises(repo_root: Path, monkeypatch) -> None:
@@ -273,6 +360,95 @@ def test_status_includes_changed_files_when_git_dirty(client, repo_root: Path, a
 
     assert response.status_code == 200
     assert response.json()["git"]["changed_files"] == ["tasks/task_queue.json", "progress.md"]
+
+
+def test_tasks_summary_includes_multi_turn_fields(client, repo_root: Path, auth_headers: dict[str, str]) -> None:
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "R-1",
+                "title": "Research turn",
+                "assigned_to": "codex:planner",
+                "conversation_id": "ctrl-thread",
+                "multi_turn": True,
+                "status": "pending",
+            }
+        ],
+    )
+
+    response = client.get("/tasks", headers=auth_headers)
+    assert response.status_code == 200
+    task = response.json()["tasks"][0]
+    assert task["conversation_id"] == "ctrl-thread"
+    assert task["codex_instance"] == "planner"
+    assert task["multi_turn"] is True
+
+
+def test_custom_codex_template_receives_merged_prompt_file(repo_root: Path, monkeypatch) -> None:
+    prompt_dir = repo_root / "prompts" / "codex"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    (prompt_dir / "TPL-001.md").write_text("template turn", encoding="utf-8")
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "TPL-001",
+                "title": "Template turn",
+                "assigned_to": "codex:planner",
+                "conversation_id": "ctrl-thread",
+                "status": "pending",
+                "prompt_file": "prompts/codex/TPL-001.md",
+            }
+        ],
+    )
+
+    captured: list[list[str]] = []
+    monkeypatch.setenv(
+        "LOCAL_RUNNER_CODEX_COMMAND",
+        "custom-codex --merged {merged_prompt_file} --conversation {conversation_id} --instance {codex_instance}",
+    )
+    monkeypatch.setattr(
+        "local_runner.orchestrator._run_capture",
+        lambda command, _repo_root: captured.append(command) or SimpleNamespace(returncode=0, stdout="ok"),
+    )
+
+    result = run_one(repo_root)
+    assert result["status"] == REVIEW
+    assert captured
+    assert "custom-codex" in captured[0][0]
+    merged = merged_prompt_path(repo_root, "planner", "ctrl-thread", "TPL-001")
+    assert merged.exists()
+    assert str(merged) in " ".join(captured[0])
+    content = merged.read_text(encoding="utf-8")
+    assert "template turn" in content
+
+
+def test_single_turn_codex_task_does_not_create_session_files(repo_root: Path, monkeypatch) -> None:
+    prompt_dir = repo_root / "prompts" / "codex"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    (prompt_dir / "SINGLE-001.md").write_text("single turn", encoding="utf-8")
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "SINGLE-001",
+                "title": "Single turn",
+                "assigned_to": "codex",
+                "status": "pending",
+                "prompt_file": "prompts/codex/SINGLE-001.md",
+            }
+        ],
+    )
+    monkeypatch.setattr("local_runner.orchestrator.shutil.which", lambda _name: "codex")
+    monkeypatch.setattr(
+        "local_runner.orchestrator._run_capture",
+        lambda _command, _repo_root: SimpleNamespace(returncode=0, stdout="ok"),
+    )
+
+    result = run_one(repo_root)
+    assert result["status"] == REVIEW
+    assert not (repo_root / "state" / "codex_sessions").exists()
 
 
 def test_run_once_returns_busy_when_runner_lock_exists(client, repo_root: Path, auth_headers: dict[str, str]) -> None:

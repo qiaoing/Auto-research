@@ -89,3 +89,16 @@ python src/visualization/plot_trajectory.py --help
 - 最终研究方向选择
 - 真实硬件实验执行
 - 论文投稿或对外发布
+
+## Multi-turn Codex Protocol (Update)
+
+- Use `assigned_to: "codex:<instance>"` plus `conversation_id` (or `thread_id`) to route turns to one logical local Codex session.
+- Session artifacts are persisted under `state/codex_sessions/<instance>/<conversation_id>/`:
+  - `transcript.md`
+  - `metadata.json`
+  - `turns/<task_id>_merged_prompt.md`
+- `/tasks` summary now exposes `conversation_id`, `thread_id`, `codex_instance`, `agent_instance`, `multi_turn`.
+- If using a custom `LOCAL_RUNNER_CODEX_COMMAND`, consume the merged prompt via `{merged_prompt_file}`.
+  Example:
+  `LOCAL_RUNNER_CODEX_COMMAND="codex exec --cd {repo_root} --prompt-file {merged_prompt_file}"`
+- Runner remains single-process serial execution by default. Multiple instances currently mean logical routing, not parallel execution.
