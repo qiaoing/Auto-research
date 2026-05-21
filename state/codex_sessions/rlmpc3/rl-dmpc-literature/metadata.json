@@ -1,0 +1,14 @@
+{
+  "instance": "rlmpc3",
+  "conversation_id": "rl-dmpc-literature",
+  "last_task_id": "RLDMPC-LIT-003",
+  "last_update": "2026-05-21T09:35:56+00:00",
+  "turns": [
+    {
+      "task_id": "RLDMPC-LIT-003",
+      "timestamp": "2026-05-21T09:35:56+00:00",
+      "updated_at": "2026-05-21T09:35:56+00:00",
+      "log_path": "logs/RLDMPC-LIT-003_agent.log"
+    }
+  ]
+}
