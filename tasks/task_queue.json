@@ -276,7 +276,7 @@
       "id": "MT-SMOKE-001",
       "title": "Multi-turn Codex smoke test: first turn writes a short plan",
       "priority": 0,
-      "status": "pending",
+      "status": "review",
       "prompt_file": "prompts/codex/MT-SMOKE-001.md",
       "expected_outputs": [
         "state/codex_sessions/planner/multi-turn-smoke/transcript.md",
@@ -289,9 +289,29 @@
       "multi_turn": true,
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 1,
-      "created_by": "cloud-hermes"
+      "created_by": "cloud-hermes",
+      "changed_files": [
+        "logs/MT-SMOKE-001_agent.log",
+        "logs/runner_status.json",
+        "progress.md",
+        "state",
+        "state/codex_sessions/planner/multi-turn-smoke/transcript.md",
+        "state/codex_sessions/planner/multi-turn-smoke/turns/MT-SMOKE-001_merged_prompt.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/MT-SMOKE-001_agent.log"
+      ],
+      "last_note": "Local execution completed; waiting for Hermes review.",
+      "last_error": null,
+      "last_update": "2026-05-21T04:03:53+00:00",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-21T04:03:21+00:00",
+      "started_at": "2026-05-21T04:03:21+00:00",
+      "finished_at": "2026-05-21T04:03:53+00:00",
+      "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-smoke\\turns\\MT-SMOKE-001_merged_prompt.md"
     },
     {
       "id": "MT-SMOKE-002",
@@ -312,7 +332,16 @@
       "requires_human_approval": false,
       "attempts": 0,
       "max_attempts": 1,
-      "created_by": "cloud-hermes"
+      "created_by": "cloud-hermes",
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "last_update": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     }
   ]
 }

@@ -96,3 +96,9 @@
 - 2026-05-21T03:19:34+00:00 No pending task found for local runner.
 
 - 2026-05-21T03:58:59+00:00 No pending task found for local runner.
+
+- 2026-05-21T04:03:21+00:00 Task MT-SMOKE-001 claimed by local-runner.
+
+- 2026-05-21T04:03:21+00:00 Task MT-SMOKE-001 started.
+
+- 2026-05-21T04:03:53+00:00 Task MT-SMOKE-001 moved to review.
