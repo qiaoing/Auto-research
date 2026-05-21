@@ -110,3 +110,9 @@
 - 2026-05-21T04:04:03+00:00 Task MT-SMOKE-002 failed: ������̫����.
 
 - 2026-05-21T04:04:13+00:00 No pending task found for local runner.
+
+- 2026-05-21T04:25:06+00:00 Task MT-SMOKE-RERUN-001 claimed by local-runner.
+
+- 2026-05-21T04:25:06+00:00 Task MT-SMOKE-RERUN-001 started.
+
+- 2026-05-21T04:26:27+00:00 Task MT-SMOKE-RERUN-001 moved to review.

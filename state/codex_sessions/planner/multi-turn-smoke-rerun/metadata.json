@@ -1,0 +1,14 @@
+{
+  "instance": "planner",
+  "conversation_id": "multi-turn-smoke-rerun",
+  "last_task_id": "MT-SMOKE-RERUN-001",
+  "last_update": "2026-05-21T04:26:27+00:00",
+  "turns": [
+    {
+      "task_id": "MT-SMOKE-RERUN-001",
+      "timestamp": "2026-05-21T04:26:27+00:00",
+      "updated_at": "2026-05-21T04:26:27+00:00",
+      "log_path": "logs/MT-SMOKE-RERUN-001_agent.log"
+    }
+  ]
+}
