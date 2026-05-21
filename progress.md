@@ -116,3 +116,9 @@
 - 2026-05-21T04:25:06+00:00 Task MT-SMOKE-RERUN-001 started.
 
 - 2026-05-21T04:26:27+00:00 Task MT-SMOKE-RERUN-001 moved to review.
+
+- 2026-05-21T04:26:37+00:00 Task MT-SMOKE-RERUN-002 claimed by local-runner.
+
+- 2026-05-21T04:26:37+00:00 Task MT-SMOKE-RERUN-002 started.
+
+- 2026-05-21T04:26:38+00:00 Task MT-SMOKE-RERUN-002 failed: ������̫����.
