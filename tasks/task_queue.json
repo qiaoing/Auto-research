@@ -354,6 +354,48 @@
       "started_at": "2026-05-21T04:04:03+00:00",
       "finished_at": "2026-05-21T04:04:03+00:00",
       "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-smoke\\turns\\MT-SMOKE-002_merged_prompt.md"
+    },
+    {
+      "id": "MT-SMOKE-RERUN-001",
+      "title": "Multi-turn Codex rerun smoke test: first turn",
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MT-SMOKE-RERUN-001.md",
+      "expected_outputs": [
+        "state/codex_sessions/planner/multi-turn-smoke-rerun/transcript.md",
+        "state/codex_sessions/planner/multi-turn-smoke-rerun/turns/MT-SMOKE-RERUN-001_merged_prompt.md"
+      ],
+      "type": "smoke-test",
+      "assigned_to": "codex:planner",
+      "conversation_id": "multi-turn-smoke-rerun",
+      "codex_instance": "planner",
+      "multi_turn": true,
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes"
+    },
+    {
+      "id": "MT-SMOKE-RERUN-002",
+      "title": "Multi-turn Codex rerun smoke test: second turn verifies first turn context",
+      "priority": 1,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MT-SMOKE-RERUN-002.md",
+      "expected_outputs": [
+        "state/codex_sessions/planner/multi-turn-smoke-rerun/transcript.md",
+        "state/codex_sessions/planner/multi-turn-smoke-rerun/turns/MT-SMOKE-RERUN-002_merged_prompt.md"
+      ],
+      "type": "smoke-test",
+      "assigned_to": "codex:planner",
+      "conversation_id": "multi-turn-smoke-rerun",
+      "codex_instance": "planner",
+      "multi_turn": true,
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes"
     }
   ]
 }
