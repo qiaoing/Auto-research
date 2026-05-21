@@ -483,7 +483,7 @@
       "id": "MT-STDIN-002",
       "title": "Multi-turn Codex stdin smoke test: second turn uses long prompt via stdin",
       "priority": 1,
-      "status": "pending",
+      "status": "review",
       "prompt_file": "prompts/codex/MT-STDIN-002.md",
       "expected_outputs": [
         "state/codex_sessions/planner/multi-turn-stdin-smoke/transcript.md",
@@ -496,18 +496,29 @@
       "multi_turn": true,
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 1,
       "created_by": "cloud-hermes",
-      "changed_files": [],
-      "logs": [],
-      "last_note": null,
+      "changed_files": [
+        "logs/MT-STDIN-002_agent.log",
+        "logs/runner_status.json",
+        "progress.md",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/metadata.json",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/transcript.md",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/turns/MT-STDIN-002_merged_prompt.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/MT-STDIN-002_agent.log"
+      ],
+      "last_note": "Local execution completed; waiting for Hermes review.",
       "last_error": null,
-      "last_update": null,
-      "claimed_by": null,
-      "claimed_at": null,
-      "started_at": null,
-      "finished_at": null
+      "last_update": "2026-05-21T05:04:17+00:00",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-21T05:03:47+00:00",
+      "started_at": "2026-05-21T05:03:47+00:00",
+      "finished_at": "2026-05-21T05:04:17+00:00",
+      "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-stdin-smoke\\turns\\MT-STDIN-002_merged_prompt.md"
     }
   ]
 }
