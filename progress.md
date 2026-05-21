@@ -931,3 +931,14 @@ ERROR: Selected model is at capacity. Please try a different model.
 ERROR: Selected model is at capacity. Please try a different model.
 tokens used
 138,107.
+
+- 2026-05-21T09:43:29+00:00 Task RLDMPC-LIT-005 claimed by local-runner.
+
+- 2026-05-21T09:43:29+00:00 Task RLDMPC-LIT-005 started.
+
+
+- 2026-05-21 Task RLDMPC-LIT-005 completed.
+- Added `reports/research/RLDMPC-LIT-005-uuv-rl-mpc.md`.
+- Scope: literature-only update for LEAF-MPC subsection "Differentiable MPC with RL-Learned Parameters"; no code files changed.
+
+- 2026-05-21T10:02:55+00:00 Task RLDMPC-LIT-005 moved to review.

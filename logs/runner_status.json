@@ -1,9 +1,9 @@
 {
   "current_task": null,
-  "last_run_at": "2026-05-21T09:43:19+00:00",
-  "last_run_status": "failed",
-  "last_run_id": "20260521-173603",
-  "updated_at": "2026-05-21T09:43:19+00:00",
-  "last_task_id": "RLDMPC-LIT-004",
+  "last_run_at": "2026-05-21T10:02:55+00:00",
+  "last_run_status": "review",
+  "last_run_id": "20260521-174325",
+  "updated_at": "2026-05-21T10:02:55+00:00",
+  "last_task_id": "RLDMPC-LIT-005",
   "last_error": "could not start quality check: D:\\tool\\anaconda\\python.exe -m pytest tests/test_pid.py -q ([WinError 2] The system cannot find the file specified)"
 }
