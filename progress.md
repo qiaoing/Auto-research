@@ -944,3 +944,9 @@ tokens used
 - 2026-05-21T10:02:55+00:00 Task RLDMPC-LIT-005 moved to review.
 
 - 2026-05-21T10:03:07+00:00 No pending task found for local runner.
+
+- 2026-05-21T15:47:55+00:00 Task MATLAB-LEAF-001 claimed by local-runner.
+
+- 2026-05-21T15:47:55+00:00 Task MATLAB-LEAF-001 started.
+
+- 2026-05-21T15:50:53+00:00 Task MATLAB-LEAF-001 failed: missing expected outputs: matlab/leaf_mpc/models/uuv_model_step.m, matlab/leaf_mpc/trajectory/traj_fig8_3d.m, matlab/leaf_mpc/main/run_smoke_tests.m.

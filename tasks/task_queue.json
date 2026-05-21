@@ -770,7 +770,7 @@
       "codex_instance": "sim",
       "multi_turn": true,
       "priority": 0,
-      "status": "pending",
+      "status": "failed",
       "prompt_file": "prompts/codex/MATLAB-LEAF-001.md",
       "expected_outputs": [
         "matlab/leaf_mpc/models/uuv_model_step.m",
@@ -779,7 +779,7 @@
       ],
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 2,
       "created_by": "cloud-hermes",
       "created_at": "2026-05-21T15:47:31Z",
@@ -788,7 +788,28 @@
         "MATLAB 代码中文注释充分，接口与任务要求一致",
         "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
         "更新 progress.md 并记录运行/验证命令"
-      ]
+      ],
+      "changed_files": [
+        "logs/MATLAB-LEAF-001_agent.log",
+        "logs/runner_status.json",
+        "progress.md",
+        "state/codex_sessions/sim",
+        "state/codex_sessions/sim/leaf-mpc-matlab-sim-20260521-sim/transcript.md",
+        "state/codex_sessions/sim/leaf-mpc-matlab-sim-20260521-sim/turns/MATLAB-LEAF-001_merged_prompt.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/MATLAB-LEAF-001_agent.log",
+        "logs/MATLAB-LEAF-001_orchestrator.log"
+      ],
+      "last_note": "Expected outputs were not produced.",
+      "last_error": "missing expected outputs: matlab/leaf_mpc/models/uuv_model_step.m, matlab/leaf_mpc/trajectory/traj_fig8_3d.m, matlab/leaf_mpc/main/run_smoke_tests.m",
+      "last_update": "2026-05-21T15:50:53+00:00",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-21T15:47:55+00:00",
+      "started_at": "2026-05-21T15:47:55+00:00",
+      "finished_at": "2026-05-21T15:50:53+00:00",
+      "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\sim\\leaf-mpc-matlab-sim-20260521-sim\\turns\\MATLAB-LEAF-001_merged_prompt.md"
     },
     {
       "id": "MATLAB-LEAF-002",
@@ -818,7 +839,16 @@
         "MATLAB 代码中文注释充分，接口与任务要求一致",
         "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
         "更新 progress.md 并记录运行/验证命令"
-      ]
+      ],
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "last_update": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     },
     {
       "id": "MATLAB-LEAF-003",
@@ -847,7 +877,16 @@
         "MATLAB 代码中文注释充分，接口与任务要求一致",
         "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
         "更新 progress.md 并记录运行/验证命令"
-      ]
+      ],
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "last_update": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     },
     {
       "id": "MATLAB-LEAF-004",
@@ -877,7 +916,16 @@
         "MATLAB 代码中文注释充分，接口与任务要求一致",
         "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
         "更新 progress.md 并记录运行/验证命令"
-      ]
+      ],
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "last_update": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     },
     {
       "id": "MATLAB-LEAF-005",
@@ -905,7 +953,16 @@
         "MATLAB 代码中文注释充分，接口与任务要求一致",
         "若无法实际运行 MATLAB，必须提供 dry-run/结构检查和限制说明",
         "更新 progress.md 并记录运行/验证命令"
-      ]
+      ],
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "last_update": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     }
   ]
 }

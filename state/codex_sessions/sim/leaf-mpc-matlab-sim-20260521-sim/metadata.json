@@ -1,0 +1,14 @@
+{
+  "instance": "sim",
+  "conversation_id": "leaf-mpc-matlab-sim-20260521-sim",
+  "last_task_id": "MATLAB-LEAF-001",
+  "last_update": "2026-05-21T15:50:53+00:00",
+  "turns": [
+    {
+      "task_id": "MATLAB-LEAF-001",
+      "timestamp": "2026-05-21T15:50:53+00:00",
+      "updated_at": "2026-05-21T15:50:53+00:00",
+      "log_path": "logs/MATLAB-LEAF-001_agent.log"
+    }
+  ]
+}
