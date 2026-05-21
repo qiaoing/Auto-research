@@ -144,3 +144,12 @@
 - 2026-05-21T08:45:24+00:00 Task RLDMPC-LIT-001 started.
 
 - 2026-05-21T09:22:45+00:00 Task RLDMPC-LIT-001 failed: missing expected outputs: reports/research/RLDMPC-LIT-001-differentiable-mpc.md.
+
+- 2026-05-21T09:22:56+00:00 Task RLDMPC-LIT-002 claimed by local-runner.
+
+- 2026-05-21T09:22:56+00:00 Task RLDMPC-LIT-002 started.
+- 2026-05-21 已完成 `RLDMPC-LIT-002` 文献调研报告，输出文件为 `reports/research/RLDMPC-LIT-002-rl-learned-mpc-weights.md`。
+- `RLDMPC-LIT-002` 聚焦 `RL/PPO/DDPG` 学习 `MPC` 代价权重、终端权重、控制权重、软约束惩罚与相关元参数，报告中已按“强相关/中等相关/背景相关”标注文献相关度并说明不确定项。
+- 已对输出文件进行回读检查，确认报告已写入目标路径。
+
+- 2026-05-21T09:35:41+00:00 Task RLDMPC-LIT-002 moved to review.
