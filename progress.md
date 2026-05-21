@@ -124,3 +124,9 @@
 - 2026-05-21T04:26:38+00:00 Task MT-SMOKE-RERUN-002 failed: ������̫����.
 
 - 2026-05-21T04:26:47+00:00 No pending task found for local runner.
+
+- 2026-05-21T05:03:12+00:00 Task MT-STDIN-001 claimed by local-runner.
+
+- 2026-05-21T05:03:12+00:00 Task MT-STDIN-001 started.
+
+- 2026-05-21T05:03:37+00:00 Task MT-STDIN-001 moved to review.

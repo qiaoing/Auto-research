@@ -1,0 +1,14 @@
+{
+  "instance": "planner",
+  "conversation_id": "multi-turn-stdin-smoke",
+  "last_task_id": "MT-STDIN-001",
+  "last_update": "2026-05-21T05:03:37+00:00",
+  "turns": [
+    {
+      "task_id": "MT-STDIN-001",
+      "timestamp": "2026-05-21T05:03:37+00:00",
+      "updated_at": "2026-05-21T05:03:37+00:00",
+      "log_path": "logs/MT-STDIN-001_agent.log"
+    }
+  ]
+}

@@ -442,7 +442,7 @@
       "id": "MT-STDIN-001",
       "title": "Multi-turn Codex stdin smoke test: first turn creates long context",
       "priority": 0,
-      "status": "pending",
+      "status": "review",
       "prompt_file": "prompts/codex/MT-STDIN-001.md",
       "expected_outputs": [
         "state/codex_sessions/planner/multi-turn-stdin-smoke/transcript.md",
@@ -455,9 +455,29 @@
       "multi_turn": true,
       "quality_checks": [],
       "requires_human_approval": false,
-      "attempts": 0,
+      "attempts": 1,
       "max_attempts": 1,
-      "created_by": "cloud-hermes"
+      "created_by": "cloud-hermes",
+      "changed_files": [
+        "logs/MT-STDIN-001_agent.log",
+        "logs/runner_status.json",
+        "progress.md",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/transcript.md",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/turns/MT-STDIN-001_merged_prompt.md",
+        "tasks/task_queue.json"
+      ],
+      "logs": [
+        "logs/MT-STDIN-001_agent.log"
+      ],
+      "last_note": "Local execution completed; waiting for Hermes review.",
+      "last_error": null,
+      "last_update": "2026-05-21T05:03:37+00:00",
+      "claimed_by": "local-runner",
+      "claimed_at": "2026-05-21T05:03:12+00:00",
+      "started_at": "2026-05-21T05:03:12+00:00",
+      "finished_at": "2026-05-21T05:03:37+00:00",
+      "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-stdin-smoke\\turns\\MT-STDIN-001_merged_prompt.md"
     },
     {
       "id": "MT-STDIN-002",
@@ -478,7 +498,16 @@
       "requires_human_approval": false,
       "attempts": 0,
       "max_attempts": 1,
-      "created_by": "cloud-hermes"
+      "created_by": "cloud-hermes",
+      "changed_files": [],
+      "logs": [],
+      "last_note": null,
+      "last_error": null,
+      "last_update": null,
+      "claimed_by": null,
+      "claimed_at": null,
+      "started_at": null,
+      "finished_at": null
     }
   ]
 }
