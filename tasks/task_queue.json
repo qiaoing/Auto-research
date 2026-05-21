@@ -519,6 +519,141 @@
       "started_at": "2026-05-21T05:03:47+00:00",
       "finished_at": "2026-05-21T05:04:17+00:00",
       "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-stdin-smoke\\turns\\MT-STDIN-002_merged_prompt.md"
+    },
+    {
+      "id": "RLDMPC-LIT-001",
+      "title": "文献调研：聚焦 differentiable MPC / OptNet / differentiab",
+      "type": "research",
+      "assigned_to": "codex:rlmpc1",
+      "conversation_id": "rl-dmpc-literature",
+      "codex_instance": "rlmpc1",
+      "multi_turn": true,
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RLDMPC-LIT-001.md",
+      "expected_outputs": [
+        "reports/research/RLDMPC-LIT-001-differentiable-mpc.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T08:45:06Z",
+      "review_requirements": [
+        "report exists and is non-empty",
+        "contains verified references with DOI/arXiv when available",
+        "classifies papers by relevance",
+        "extracts implications for LEAF-MPC subsection"
+      ]
+    },
+    {
+      "id": "RLDMPC-LIT-002",
+      "title": "文献调研：聚焦 RL/PPO/SAC 等学习 MPC 代价权重、P/Q/R/终端权重、MPC 参数调",
+      "type": "research",
+      "assigned_to": "codex:rlmpc2",
+      "conversation_id": "rl-dmpc-literature",
+      "codex_instance": "rlmpc2",
+      "multi_turn": true,
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RLDMPC-LIT-002.md",
+      "expected_outputs": [
+        "reports/research/RLDMPC-LIT-002-rl-learned-mpc-weights.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T08:45:06Z",
+      "review_requirements": [
+        "report exists and is non-empty",
+        "contains verified references with DOI/arXiv when available",
+        "classifies papers by relevance",
+        "extracts implications for LEAF-MPC subsection"
+      ]
+    },
+    {
+      "id": "RLDMPC-LIT-003",
+      "title": "文献调研：聚焦 MPC-guided RL、safe RL with MPC、RL as high-",
+      "type": "research",
+      "assigned_to": "codex:rlmpc3",
+      "conversation_id": "rl-dmpc-literature",
+      "codex_instance": "rlmpc3",
+      "multi_turn": true,
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RLDMPC-LIT-003.md",
+      "expected_outputs": [
+        "reports/research/RLDMPC-LIT-003-safe-rl-mpc.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T08:45:06Z",
+      "review_requirements": [
+        "report exists and is non-empty",
+        "contains verified references with DOI/arXiv when available",
+        "classifies papers by relevance",
+        "extracts implications for LEAF-MPC subsection"
+      ]
+    },
+    {
+      "id": "RLDMPC-LIT-004",
+      "title": "文献调研：聚焦机器人/无人系统轨迹跟踪中 RL-MPC、learning-based MPC、ada",
+      "type": "research",
+      "assigned_to": "codex:rlmpc4",
+      "conversation_id": "rl-dmpc-literature",
+      "codex_instance": "rlmpc4",
+      "multi_turn": true,
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RLDMPC-LIT-004.md",
+      "expected_outputs": [
+        "reports/research/RLDMPC-LIT-004-robotics-trajectory.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T08:45:06Z",
+      "review_requirements": [
+        "report exists and is non-empty",
+        "contains verified references with DOI/arXiv when available",
+        "classifies papers by relevance",
+        "extracts implications for LEAF-MPC subsection"
+      ]
+    },
+    {
+      "id": "RLDMPC-LIT-005",
+      "title": "文献调研：聚焦 UUV/AUV/水下机器人中的 MPC、RL-MPC、学习控制、参数自适应控制文献，",
+      "type": "research",
+      "assigned_to": "codex:rlmpc5",
+      "conversation_id": "rl-dmpc-literature",
+      "codex_instance": "rlmpc5",
+      "multi_turn": true,
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/RLDMPC-LIT-005.md",
+      "expected_outputs": [
+        "reports/research/RLDMPC-LIT-005-uuv-rl-mpc.md"
+      ],
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes",
+      "created_at": "2026-05-21T08:45:06Z",
+      "review_requirements": [
+        "report exists and is non-empty",
+        "contains verified references with DOI/arXiv when available",
+        "classifies papers by relevance",
+        "extracts implications for LEAF-MPC subsection"
+      ]
     }
   ]
 }
