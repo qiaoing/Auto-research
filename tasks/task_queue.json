@@ -437,6 +437,48 @@
       "started_at": "2026-05-21T04:26:37+00:00",
       "finished_at": "2026-05-21T04:26:38+00:00",
       "_merged_prompt_file": "G:\\AI_workspace\\localserver\\state\\codex_sessions\\planner\\multi-turn-smoke-rerun\\turns\\MT-SMOKE-RERUN-002_merged_prompt.md"
+    },
+    {
+      "id": "MT-STDIN-001",
+      "title": "Multi-turn Codex stdin smoke test: first turn creates long context",
+      "priority": 0,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MT-STDIN-001.md",
+      "expected_outputs": [
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/transcript.md",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/turns/MT-STDIN-001_merged_prompt.md"
+      ],
+      "type": "smoke-test",
+      "assigned_to": "codex:planner",
+      "conversation_id": "multi-turn-stdin-smoke",
+      "codex_instance": "planner",
+      "multi_turn": true,
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes"
+    },
+    {
+      "id": "MT-STDIN-002",
+      "title": "Multi-turn Codex stdin smoke test: second turn uses long prompt via stdin",
+      "priority": 1,
+      "status": "pending",
+      "prompt_file": "prompts/codex/MT-STDIN-002.md",
+      "expected_outputs": [
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/transcript.md",
+        "state/codex_sessions/planner/multi-turn-stdin-smoke/turns/MT-STDIN-002_merged_prompt.md"
+      ],
+      "type": "smoke-test",
+      "assigned_to": "codex:planner",
+      "conversation_id": "multi-turn-stdin-smoke",
+      "codex_instance": "planner",
+      "multi_turn": true,
+      "quality_checks": [],
+      "requires_human_approval": false,
+      "attempts": 0,
+      "max_attempts": 1,
+      "created_by": "cloud-hermes"
     }
   ]
 }
