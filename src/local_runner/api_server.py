@@ -13,12 +13,14 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
+from pydantic import BaseModel, Field
 
 from . import git_ops
 from .config import RunnerConfig, load_config
 from .locks import is_runner_busy
 from .logging_utils import ensure_logs_dir, log_summary
 from .runner_status import read_runner_status
+from .session_worker import append_session_turn, ensure_session, read_session_transcript, session_summary
 from .state_machine import count_by_status
 from .task_store import get_tasks, summarize_tasks
 from .time_utils import utc_now_iso
@@ -28,6 +30,20 @@ SERVICE_NAME = "auto-research-local-runner"
 SAFE_TASK_ID = re.compile(r"^[A-Za-z0-9_.-]+$")
 _launch_lock = threading.Lock()
 _active_process: subprocess.Popen[Any] | None = None
+
+
+class CreateSessionRequest(BaseModel):
+    conversation_id: str = Field(..., min_length=1, max_length=120)
+    codex_instance: str = Field(default="default", min_length=1, max_length=80)
+
+
+class AppendTurnRequest(BaseModel):
+    prompt: str = Field(..., min_length=1)
+    turn_id: str | None = Field(default=None, max_length=120)
+    title: str | None = Field(default=None, max_length=240)
+    codex_instance: str = Field(default="default", min_length=1, max_length=80)
+    quality_checks: list[Any] = Field(default_factory=list)
+    expected_outputs: list[str] = Field(default_factory=list)
 
 
 def create_app(config: RunnerConfig | None = None, warn_missing_secrets: bool = False) -> FastAPI:
@@ -78,6 +94,44 @@ def create_app(config: RunnerConfig | None = None, warn_missing_secrets: bool = 
     @app.post("/run-once")
     def run_once_endpoint(_: None = Depends(protected)) -> dict[str, Any]:
         return launch_run_once(app.state.config.repo_root)
+
+    @app.post("/sessions")
+    def create_session_endpoint(payload: CreateSessionRequest, _: None = Depends(protected)) -> dict[str, Any]:
+        return {"session": ensure_session(app.state.config.repo_root, payload.conversation_id, payload.codex_instance)}
+
+    @app.get("/sessions/{conversation_id}")
+    def session_endpoint(
+        conversation_id: str,
+        codex_instance: str = "default",
+        _: None = Depends(protected),
+    ) -> dict[str, Any]:
+        return {"session": session_summary(app.state.config.repo_root, conversation_id, codex_instance)}
+
+    @app.get("/sessions/{conversation_id}/transcript")
+    def session_transcript_endpoint(
+        conversation_id: str,
+        codex_instance: str = "default",
+        _: None = Depends(protected),
+    ) -> dict[str, Any]:
+        return read_session_transcript(app.state.config.repo_root, conversation_id, codex_instance)
+
+    @app.post("/sessions/{conversation_id}/turns")
+    def append_session_turn_endpoint(
+        conversation_id: str,
+        payload: AppendTurnRequest,
+        _: None = Depends(protected),
+    ) -> dict[str, Any]:
+        result = append_session_turn(
+            app.state.config.repo_root,
+            conversation_id=conversation_id,
+            prompt=payload.prompt,
+            codex_instance=payload.codex_instance,
+            turn_id=payload.turn_id,
+            title=payload.title,
+            quality_checks=payload.quality_checks,
+            expected_outputs=payload.expected_outputs,
+        )
+        return {"turn": result.__dict__}
 
     @app.get("/logs/{task_id:path}")
     def logs_endpoint(task_id: str, _: None = Depends(protected)) -> dict[str, Any]:

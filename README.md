@@ -98,6 +98,7 @@ python src/visualization/plot_trajectory.py --help
   - `metadata.json`
   - `turns/<task_id>_merged_prompt.md`
 - `/tasks` summary now exposes `conversation_id`, `thread_id`, `codex_instance`, `agent_instance`, `multi_turn`.
+- Direct protected session endpoints are available for live back-and-forth turns: `POST /sessions`, `POST /sessions/{conversation_id}/turns`, `GET /sessions/{conversation_id}/transcript`.
 - If using a custom `LOCAL_RUNNER_CODEX_COMMAND`, consume the merged prompt via `{merged_prompt_file}`.
   Example:
   `LOCAL_RUNNER_CODEX_COMMAND="codex exec --cd {repo_root} --prompt-file {merged_prompt_file}"`

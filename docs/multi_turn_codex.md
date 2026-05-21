@@ -86,6 +86,40 @@ If your Codex CLI has no `--prompt-file`, use a wrapper script that reads `{merg
 
 This allows Hermes to track which pending/review/failed tasks belong to which local Codex session.
 
+## Direct session API v2
+
+The runner now also exposes protected conversation endpoints so cloud Hermes can append a live turn without creating a `tasks/task_queue.json` entry first:
+
+- `POST /sessions`
+- `GET /sessions/{conversation_id}?codex_instance=planner`
+- `POST /sessions/{conversation_id}/turns`
+- `GET /sessions/{conversation_id}/transcript?codex_instance=planner`
+
+Example:
+
+```bash
+curl -sS -A 'Hermes-Agent/1.0' \
+  -H "Authorization: Bearer $LOCAL_RUNNER_API_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -X POST https://auto-runner.qiaoing.work/sessions \
+  -d '{"conversation_id":"leaf-mpc-design","codex_instance":"planner"}'
+
+curl -sS -A 'Hermes-Agent/1.0' \
+  -H "Authorization: Bearer $LOCAL_RUNNER_API_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -X POST https://auto-runner.qiaoing.work/sessions/leaf-mpc-design/turns \
+  -d '{"codex_instance":"planner","turn_id":"turn-001","prompt":"继续上一轮 LEAF-MPC 架构设计，先列出要改的文件。"}'
+```
+
+The direct endpoint reuses the same Codex prompt merge and transcript persistence as task-queue mode. It stores inline prompts under `state/inline_prompts/`, merged prompts under `state/codex_sessions/<instance>/<conversation_id>/turns/`, and Codex output in the session transcript.
+
+Security constraints:
+
+- The API accepts prompt text and metadata only; it does not accept arbitrary shell commands.
+- The same bearer token protects session endpoints.
+- Path components are sanitized before writing session files.
+- Hardware/approval policy remains enforced by task-queue mode; direct session turns should still be used only for software/research/code work.
+
 ## Current concurrency model
 
 Runner is still single-process single-task serial execution by default.

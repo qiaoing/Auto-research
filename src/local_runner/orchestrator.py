@@ -62,6 +62,13 @@ def _prompt_path(repo_root: Path, task: dict[str, Any]) -> Path | None:
     explicit = task.get("prompt_file")
     if explicit:
         return resolve_prompt_file(repo_root, explicit)
+    inline_prompt = task.get("inline_prompt")
+    if isinstance(inline_prompt, str):
+        task_id = str(task.get("id") or "inline")
+        path = repo_root / "state" / "inline_prompts" / f"{safe_filename_component(task_id)}.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(inline_prompt, encoding="utf-8", newline="\n")
+        return path
     task_id = task.get("id")
     assigned_to = task.get("assigned_to", "codex")
     if not task_id:
