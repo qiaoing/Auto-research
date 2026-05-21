@@ -1,0 +1,12 @@
+{
+  "note": "No MATLAB/Octave runtime in this environment. This file is a JSON-compatible placeholder.",
+  "t_span_s": 24.0,
+  "dt_s": 0.1,
+  "metrics": {
+    "mean_error": 0.7238510432879708,
+    "rms_error": 0.778927797966402,
+    "max_error": 1.705095067525098,
+    "peak_control": 92.90096802756025,
+    "mean_compute_time": 0.012
+  }
+}

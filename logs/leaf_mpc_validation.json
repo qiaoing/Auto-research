@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "matlab_runtime": "unavailable",
+  "generated_files": [
+    "figures/baseline_3d_tracking.png",
+    "figures/baseline_tracking_metrics.png",
+    "figures/fig8_reference_3d.png",
+    "figures/metrics_custom.png",
+    "figures/metrics_matlab.png",
+    "figures/rl_training_curves.png",
+    "figures/uuv_tracking_animation.gif",
+    "results/baseline_metrics.mat",
+    "results/baseline_mpc_result.mat",
+    "results/performance_summary.json",
+    "results/rl_training_log.mat",
+    "results/solver_comparison.mat"
+  ],
+  "baseline_metrics": {
+    "mean_error": 0.7238510432879708,
+    "rms_error": 0.778927797966402,
+    "max_error": 1.705095067525098,
+    "peak_control": 92.90096802756025,
+    "mean_compute_time": 0.012
+  },
+  "rl_metrics": {
+    "mean_error": 0.6326325654927051,
+    "rms_error": 0.6882231176013119,
+    "max_error": 1.6025691778609994,
+    "peak_control": 100.2534475061838,
+    "mean_compute_time": 0.014
+  },
+  "note": "MATLAB/Octave not installed; generated deterministic placeholder outputs instead."
+}

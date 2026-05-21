@@ -1,0 +1,32 @@
+{
+  "Fixed MPC": {
+    "solver": "custom_candidate_rollout",
+    "metrics": {
+      "mean_error": 0.7238510432879708,
+      "rms_error": 0.778927797966402,
+      "max_error": 1.705095067525098,
+      "peak_control": 92.90096802756025,
+      "mean_compute_time": 0.012
+    }
+  },
+  "MATLAB wrapper": {
+    "solver": "matlab_fallback_custom",
+    "metrics": {
+      "mean_error": 0.7238510432879708,
+      "rms_error": 0.778927797966402,
+      "max_error": 1.705095067525098,
+      "peak_control": 92.90096802756025,
+      "mean_compute_time": 0.012
+    }
+  },
+  "RL-MPC demo": {
+    "solver": "custom_candidate_rollout",
+    "metrics": {
+      "mean_error": 0.6326325654927051,
+      "rms_error": 0.6882231176013119,
+      "max_error": 1.6025691778609994,
+      "peak_control": 100.2534475061838,
+      "mean_compute_time": 0.014
+    }
+  }
+}
