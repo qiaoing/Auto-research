@@ -13,6 +13,15 @@ from pathlib import Path
 from typing import Any
 
 from . import git_ops
+from .codex_sessions import (
+    append_turn,
+    build_codex_prompt,
+    codex_instance_from_task,
+    conversation_id_from_task,
+    is_codex_assignee,
+    is_multi_turn_task,
+    transcript_path,
+)
 from .logging_utils import append_text, task_agent_log_path, task_orchestrator_log_path
 from .progress import append_progress
 from .security import resolve_prompt_file, safe_filename_component
@@ -71,51 +80,126 @@ def _command_from_template(template: str, task: dict[str, Any], repo_root: Path,
     return shlex.split(template.format(**values), posix=os.name != "nt")
 
 
+def _subprocess_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env.setdefault("PYTHONUTF8", "1")
+    env.setdefault("PYTHONIOENCODING", "utf-8")
+    return env
+
+
+def _run_capture(command: list[str], repo_root: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        command,
+        cwd=repo_root,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        env=_subprocess_env(),
+    )
+
+
+def _codex_command(executable: str, repo_root: Path, prompt_text: str) -> list[str]:
+    base_args = shlex.split(os.environ.get("LOCAL_RUNNER_CODEX_ARGS", "exec"), posix=os.name != "nt")
+    if not base_args:
+        base_args = ["exec"]
+    if "--cd" not in base_args:
+        base_args.extend(["--cd", str(repo_root)])
+    return [executable, *base_args, prompt_text]
+
+
 def default_task_executor(repo_root: Path, task: dict[str, Any]) -> TaskExecutionResult:
     task_id = str(task.get("id", "unknown"))
     assigned_to = str(task.get("assigned_to", "codex")).lower()
+    agent_kind = assigned_to.split(":", 1)[0]
     log_path = task_agent_log_path(repo_root, task_id)
     append_text(log_path, f"{utc_now_iso()} starting {assigned_to} task {task_id}")
 
     if os.environ.get("LOCAL_RUNNER_AGENT_DRY_RUN") == "1":
         append_text(log_path, f"{utc_now_iso()} dry-run completed for {task_id}")
+        if is_multi_turn_task(task):
+            prompt_path = _prompt_path(repo_root, task)
+            prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
+            append_turn(
+                repo_root,
+                instance=codex_instance_from_task(task),
+                conversation_id=conversation_id_from_task(task) or codex_instance_from_task(task),
+                task_id=task_id,
+                prompt_text=prompt_text,
+                agent_output="dry-run agent execution completed",
+                log_path=log_path,
+            )
         return TaskExecutionResult(True, log_path, "dry-run agent execution completed")
 
-    env_template_name = "LOCAL_RUNNER_OPENCODE_COMMAND" if assigned_to == "opencode" else "LOCAL_RUNNER_CODEX_COMMAND"
+    env_template_name = "LOCAL_RUNNER_OPENCODE_COMMAND" if agent_kind == "opencode" else "LOCAL_RUNNER_CODEX_COMMAND"
     template = os.environ.get(env_template_name)
+    prompt_path = _prompt_path(repo_root, task)
+    prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
+
     if template:
         command = _command_from_template(template, task, repo_root, log_path)
-    elif assigned_to == "opencode":
+    elif agent_kind == "opencode":
         executable = shutil.which("opencode")
         if not executable:
             message = "opencode executable not found; set LOCAL_RUNNER_OPENCODE_COMMAND or enable dry-run"
             append_text(log_path, message)
             return TaskExecutionResult(False, log_path, "agent command unavailable", message)
-        prompt_path = _prompt_path(repo_root, task)
         command = [executable, "run"]
         if prompt_path:
             command.extend(["--prompt-file", str(prompt_path)])
-    else:
+    elif is_codex_assignee(assigned_to):
         executable = shutil.which("codex")
         if not executable:
             message = "codex executable not found; set LOCAL_RUNNER_CODEX_COMMAND or enable dry-run"
             append_text(log_path, message)
             return TaskExecutionResult(False, log_path, "agent command unavailable", message)
-        prompt_path = _prompt_path(repo_root, task)
-        prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
-        command = [executable, "exec", "--cd", str(repo_root), prompt_text]
+        command = _codex_command(executable, repo_root, build_codex_prompt(repo_root, task, prompt_text))
+    else:
+        message = f"unsupported assigned_to value: {assigned_to}"
+        append_text(log_path, message)
+        return TaskExecutionResult(False, log_path, "agent command unavailable", message)
 
-    result = subprocess.run(
-        command,
-        cwd=repo_root,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
+    result = _run_capture(command, repo_root)
     append_text(log_path, result.stdout)
     if result.returncode != 0:
         return TaskExecutionResult(False, log_path, "agent execution failed", result.stdout.strip())
+    if is_multi_turn_task(task) and is_codex_assignee(assigned_to):
+        append_turn(
+            repo_root,
+            instance=codex_instance_from_task(task),
+            conversation_id=conversation_id_from_task(task) or codex_instance_from_task(task),
+            task_id=task_id,
+            prompt_text=prompt_text,
+            agent_output=result.stdout,
+            log_path=log_path,
+        )
     return TaskExecutionResult(True, log_path, "agent execution completed")
+
+
+def _record_multi_turn_if_needed(repo_root: Path, task: dict[str, Any], execution: TaskExecutionResult) -> None:
+    if not is_multi_turn_task(task):
+        return
+    instance = codex_instance_from_task(task)
+    conversation_id = conversation_id_from_task(task)
+    if not conversation_id:
+        return
+    path = transcript_path(repo_root, instance, conversation_id)
+    task_id = str(task.get("id", "unknown"))
+    if path.exists() and f"## Turn {task_id}" in path.read_text(encoding="utf-8", errors="replace"):
+        return
+    prompt_path = _prompt_path(repo_root, task)
+    prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path and prompt_path.exists() else str(task.get("title", task_id))
+    agent_output = execution.log_path.read_text(encoding="utf-8", errors="replace") if execution.log_path.exists() else execution.note
+    append_turn(
+        repo_root,
+        instance=instance,
+        conversation_id=conversation_id,
+        task_id=task_id,
+        prompt_text=prompt_text,
+        agent_output=agent_output,
+        log_path=execution.log_path,
+    )
 
 
 def run_quality_checks(repo_root: Path, task: dict[str, Any]) -> tuple[bool, list[str], str | None]:
@@ -136,13 +220,7 @@ def run_quality_checks(repo_root: Path, task: dict[str, Any]) -> tuple[bool, lis
             return False, log_paths, f"quality check command is not allowed: {' '.join(command)}"
 
         try:
-            result = subprocess.run(
-                command,
-                cwd=repo_root,
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-            )
+            result = _run_capture(command, repo_root)
         except OSError as exc:
             append_text(log_path, str(exc))
             log_paths.append(str(log_path.relative_to(repo_root).as_posix()))
@@ -304,8 +382,14 @@ def run_one(repo_root: Path, runner_id: str = "local-runner", executor: TaskExec
     before_files = set(git_ops.changed_files(repo_root)) if git_ops.is_git_repo(repo_root) else set()
     logs = list(running.get("logs", []))
     common_paths = ["tasks/task_queue.json", "progress.md"]
+    if is_multi_turn_task(running):
+        instance = codex_instance_from_task(running)
+        conversation_id = conversation_id_from_task(running)
+        if conversation_id:
+            common_paths.append(str(transcript_path(repo_root, instance, conversation_id).relative_to(repo_root).as_posix()))
     try:
         execution = executor(repo_root, running)
+        _record_multi_turn_if_needed(repo_root, running, execution)
         execution_log = str(execution.log_path.relative_to(repo_root).as_posix())
         logs.append(execution_log)
         common_paths.append(execution_log)

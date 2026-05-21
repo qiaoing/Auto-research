@@ -57,6 +57,24 @@ python src/visualization/plot_trajectory.py --help
 3. 由 `Codex` 或 `OpenCode` 按任务提示词完成实现
 4. 结果写入 `results/`、图表写入 `figures/`、论文素材写入 `paper/`
 
+### 多轮 Codex 任务
+
+任务队列支持多个本地 Codex 逻辑会话。使用 `assigned_to: "codex:<instance>"` 加 `conversation_id`，runner 会在每一轮 Codex 执行前自动注入该会话的历史 transcript，并在完成后追加本轮输入/输出到 `state/codex_sessions/<instance>/<conversation_id>/transcript.md`。
+
+示例：
+
+```json
+{
+  "id": "CTRL-002",
+  "assigned_to": "codex:controller",
+  "conversation_id": "learning-mpc-controller",
+  "status": "pending",
+  "prompt_file": "prompts/codex/CTRL-002.md"
+}
+```
+
+详见 `docs/multi_turn_codex.md`。
+
 ## 安全注意事项
 
 - 禁止自动执行真实硬件实验

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from local_runner import runner_service
 from local_runner import api_server
+from local_runner.codex_sessions import transcript_path
 from local_runner.locks import runner_lock_path
 from local_runner.orchestrator import TaskExecutionResult, run_one
 from local_runner.state_machine import BLOCKED, FAILED, REVIEW
@@ -46,6 +47,32 @@ def test_task_state_machine_claim_run_review(repo_root: Path) -> None:
     assert task["attempts"] == 1
     assert task["logs"] == ["logs/SIM-001_agent.log"]
     assert task["changed_files"]
+
+
+def test_multi_turn_codex_task_records_transcript(repo_root: Path) -> None:
+    write_queue(
+        repo_root,
+        [
+            {
+                "id": "THREAD-001",
+                "title": "First turn",
+                "assigned_to": "codex:planner",
+                "conversation_id": "ctrl-thread",
+                "status": "pending",
+            }
+        ],
+    )
+
+    result = run_one(repo_root, executor=successful_executor)
+
+    assert result["status"] == REVIEW
+    path = transcript_path(repo_root, "planner", "ctrl-thread")
+    assert path.exists()
+    transcript = path.read_text(encoding="utf-8")
+    assert "Turn THREAD-001" in transcript
+    assert "First turn" in transcript
+    task = find_task(repo_root, "THREAD-001")
+    assert "state/codex_sessions/planner/ctrl-thread/transcript.md" in task["changed_files"]
 
 
 def test_requires_human_approval_becomes_blocked_without_execution(repo_root: Path) -> None:
