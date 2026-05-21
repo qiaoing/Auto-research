@@ -138,3 +138,9 @@
 - 2026-05-21T05:04:17+00:00 Task MT-STDIN-002 moved to review.
 
 - 2026-05-21T05:04:28+00:00 No pending task found for local runner.
+
+- 2026-05-21T08:45:24+00:00 Task RLDMPC-LIT-001 claimed by local-runner.
+
+- 2026-05-21T08:45:24+00:00 Task RLDMPC-LIT-001 started.
+
+- 2026-05-21T09:22:45+00:00 Task RLDMPC-LIT-001 failed: missing expected outputs: reports/research/RLDMPC-LIT-001-differentiable-mpc.md.
